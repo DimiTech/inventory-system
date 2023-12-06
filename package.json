@@ -1,0 +1,9 @@
+{
+  "name": "refresh-rate-independent-game-loop-poc",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "python3 -m http.server 8080"
+  },
+  "license": "gpl-3.0"
+}
