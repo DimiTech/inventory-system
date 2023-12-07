@@ -1,3 +1,5 @@
+import { isFirefox } from './utils/BrowserDetection.js'
+
 import { context } from './Canvas.js'
 
 // Occupied - good word
@@ -39,11 +41,20 @@ function create(col, row, x, y, color = INVENTORY_SLOT_CONFIG.COLORS.GREEN) {
 function render(SLOT_SIZE) {
   const { x, y, color } = this
 
-  const lineWidth = 1
-  // context.lineWidth = lineWidth
-  // context.strokeStyle = INVENTORY_SLOT_CONFIG.STROKE_STYLE
-  // context.strokeRect(x - lineWidth, y - lineWidth, SLOT_SIZE + lineWidth * 2, SLOT_SIZE + lineWidth * 2)
+  // Stroke Rect
+  const lineWidth = 2
+  context.lineWidth = lineWidth
+  context.strokeStyle = INVENTORY_SLOT_CONFIG.STROKE_STYLE
 
+  let outlineX = x - lineWidth / 2
+  let outlineY = y - lineWidth / 2
+  if (isFirefox) {
+    outlineX += 0.5
+    outlineY += 0.5
+  }
+  context.strokeRect(outlineX, outlineY, SLOT_SIZE + lineWidth, SLOT_SIZE + lineWidth)
+
+  // Fill Rect
   context.fillStyle = color
   context.fillRect(x, y, SLOT_SIZE, SLOT_SIZE)
 }

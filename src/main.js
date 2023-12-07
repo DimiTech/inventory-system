@@ -8,11 +8,11 @@ import inventory from './Inventory.js'
 // Time
 // ----------------------------------------------------------------------------
 
-const TIME = { // Milliseconds
+const TIME = {
+  // Milliseconds
   previousTimestamp: undefined,
   frameElapsedTime: undefined,
 }
-
 
 // ----------------------------------------------------------------------------
 // Player
@@ -32,7 +32,7 @@ const player = {
   speed: 0.1,
 }
 
-player.update = function() {
+player.update = function () {
   if (this.moving.up) {
     this.y -= Math.round(this.speed * TIME.frameElapsedTime)
   }
@@ -47,16 +47,11 @@ player.update = function() {
   }
 }
 
-player.render = function() {
-  context.beginPath();
-  context.rect(
-    this.x - (this.width / 2),
-    this.y - (this.height / 2),
-    this.width,
-    this.height
-  );
-  context.fillStyle = 'black';
-  context.fill();
+player.render = function () {
+  context.beginPath()
+  context.rect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height)
+  context.fillStyle = 'black'
+  context.fill()
 }
 
 // ----------------------------------------------------------------------------
@@ -77,9 +72,9 @@ function update() {
 
 function render() {
   context.clearRect(0, 0, canvas.width, canvas.height)
+  drawFPS()
   player.render()
   inventory.render()
-  drawFPS()
 }
 
 function gameLoopStep() {

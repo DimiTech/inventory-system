@@ -7,7 +7,7 @@ const { SCALE } = CONFIG
 
 const INVENTORY_CONFIG = {
   SLOT_SIZE: 28,
-  SLOT_GAP: 4,
+  SLOT_GAP: 10,
   COLS: 8,
   ROWS: 6,
 }
@@ -82,12 +82,12 @@ function setupEventListeners() {
 function setupMouseListeners() {
   canvas.addEventListener('mousedown', handleMouseDown)
   canvas.addEventListener('mousemove', handleMouseHover)
-  canvas.addEventListener('mouseup', handleMouseUp)
+  document.addEventListener('mouseup', handleMouseUp)
 }
 function removeMouseListeners() {
   canvas.removeEventListener('mousedown', handleMouseDown)
   canvas.removeEventListener('mousemove', handleMouseHover)
-  canvas.removeEventListener('mouseup', handleMouseUp)
+  document.removeEventListener('mouseup', handleMouseUp)
 }
 function handleMouseDown(e) {
   STATE.isMouseDragging = true
