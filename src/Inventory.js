@@ -7,13 +7,23 @@ const { SCALE } = CONFIG
 
 const INVENTORY_CONFIG = {
   SLOT_SIZE: 28,
+  SLOT_GAP: 4,
   COLS: 8,
   ROWS: 6,
 }
-INVENTORY_CONFIG.HALF_SLOT_SIZE = Math.floor(INVENTORY_CONFIG.SLOT_SIZE / 2)
+if (INVENTORY_CONFIG.SLOT_SIZE % 2 !== 0) {
+  throw new Error('INVENTORY_CONFIG.SLOT_SIZE must be an even number!')
+}
+if (INVENTORY_CONFIG.SLOT_GAP % 2 !== 0) {
+  throw new Error('INVENTORY_CONFIG.SLOT_GAP must be an even number!')
+}
+INVENTORY_CONFIG.HALF_SLOT_SIZE = parseInt(INVENTORY_CONFIG.SLOT_SIZE / 2)
+INVENTORY_CONFIG.HALF_GAP_SIZE = parseInt(INVENTORY_CONFIG.SLOT_GAP / 2)
+const totalGapOffsetX = (INVENTORY_CONFIG.COLS * INVENTORY_CONFIG.SLOT_GAP) / 2
+const totalGapOffsetY = (INVENTORY_CONFIG.ROWS * INVENTORY_CONFIG.SLOT_GAP) / 2
 INVENTORY_CONFIG.START = {
-  X: canvas.width / 2 - (INVENTORY_CONFIG.SLOT_SIZE * INVENTORY_CONFIG.COLS) / 2, // center X
-  Y: canvas.height / 2 - (INVENTORY_CONFIG.SLOT_SIZE * INVENTORY_CONFIG.ROWS) / 2, // center Y
+  X: canvas.width / 2 - (INVENTORY_CONFIG.SLOT_SIZE * INVENTORY_CONFIG.COLS) / 2 - totalGapOffsetX, // center X
+  Y: canvas.height / 2 - (INVENTORY_CONFIG.SLOT_SIZE * INVENTORY_CONFIG.ROWS) / 2 - totalGapOffsetY, // center Y
 }
 
 const STATE = {
@@ -29,14 +39,14 @@ const STATE = {
 }
 
 // Initialize state
-for (let col = 0; col < INVENTORY_CONFIG.COLS; ++col) {
-  for (let row = 0; row < INVENTORY_CONFIG.ROWS; ++row) {
+for (let row = 0; row < INVENTORY_CONFIG.ROWS; ++row) {
+  for (let col = 0; col < INVENTORY_CONFIG.COLS; ++col) {
     STATE.inventorySlots.push(
       inventorySlots.create(
         col,
         row,
-        INVENTORY_CONFIG.START.X + col * INVENTORY_CONFIG.SLOT_SIZE,
-        INVENTORY_CONFIG.START.Y + row * INVENTORY_CONFIG.SLOT_SIZE,
+        INVENTORY_CONFIG.START.X + col * INVENTORY_CONFIG.SLOT_SIZE + col * INVENTORY_CONFIG.SLOT_GAP,
+        INVENTORY_CONFIG.START.Y + row * INVENTORY_CONFIG.SLOT_SIZE + row * INVENTORY_CONFIG.SLOT_GAP,
       ),
     )
   }
@@ -44,8 +54,8 @@ for (let col = 0; col < INVENTORY_CONFIG.COLS; ++col) {
 
 // TODO: Temporary item initialization
 STATE.inventorySlots[0].storedItem = createItem()
-STATE.inventorySlots[INVENTORY_CONFIG.ROWS * 1].storedItem = createItem()
-STATE.inventorySlots[INVENTORY_CONFIG.ROWS * 2].storedItem = createItem()
+STATE.inventorySlots[1].storedItem = createItem()
+STATE.inventorySlots[2].storedItem = createItem()
 
 function setup() {
   setupEventListeners()
@@ -111,7 +121,7 @@ function handleMouseHover(e) {
 
     if (isWithinInventory(x, y)) {
       const slotUnderCursor = findInventorySlotAtCoordinates(x, y)
-      slotUnderCursor.highlight()
+      slotUnderCursor && slotUnderCursor.highlight()
     }
   }
 }
@@ -145,16 +155,25 @@ function handleMouseUp(e) {
 function isWithinInventory(x, y) {
   return (
     x > INVENTORY_CONFIG.START.X &&
-    x < INVENTORY_CONFIG.START.X + INVENTORY_CONFIG.COLS * INVENTORY_CONFIG.SLOT_SIZE &&
+    x <
+      INVENTORY_CONFIG.START.X +
+        INVENTORY_CONFIG.COLS * INVENTORY_CONFIG.SLOT_SIZE +
+        INVENTORY_CONFIG.COLS * INVENTORY_CONFIG.SLOT_GAP &&
     y > INVENTORY_CONFIG.START.Y &&
-    y < INVENTORY_CONFIG.START.Y + INVENTORY_CONFIG.ROWS * INVENTORY_CONFIG.SLOT_SIZE
+    y <
+      INVENTORY_CONFIG.START.Y +
+        INVENTORY_CONFIG.ROWS * INVENTORY_CONFIG.SLOT_SIZE +
+        INVENTORY_CONFIG.ROWS * INVENTORY_CONFIG.SLOT_GAP
   )
 }
 
 function findInventorySlotAtCoordinates(x, y) {
   return STATE.inventorySlots.find(
     slot =>
-      slot.x < x && slot.x + INVENTORY_CONFIG.SLOT_SIZE >= x && slot.y < y && slot.y + INVENTORY_CONFIG.SLOT_SIZE >= y,
+      slot.x - INVENTORY_CONFIG.HALF_GAP_SIZE < x &&
+      slot.x + INVENTORY_CONFIG.SLOT_SIZE + INVENTORY_CONFIG.HALF_GAP_SIZE >= x &&
+      slot.y - INVENTORY_CONFIG.HALF_GAP_SIZE < y &&
+      slot.y + INVENTORY_CONFIG.SLOT_SIZE + INVENTORY_CONFIG.HALF_GAP_SIZE >= y,
   )
 }
 

@@ -40,12 +40,12 @@ function render(SLOT_SIZE) {
   const { x, y, color } = this
 
   const lineWidth = 1
-  context.lineWidth = lineWidth
-  context.strokeStyle = INVENTORY_SLOT_CONFIG.STROKE_STYLE
-  context.strokeRect(x, y, SLOT_SIZE - lineWidth, SLOT_SIZE - lineWidth)
+  // context.lineWidth = lineWidth
+  // context.strokeStyle = INVENTORY_SLOT_CONFIG.STROKE_STYLE
+  // context.strokeRect(x - lineWidth, y - lineWidth, SLOT_SIZE + lineWidth * 2, SLOT_SIZE + lineWidth * 2)
 
   context.fillStyle = color
-  context.fillRect(x, y, SLOT_SIZE - lineWidth * 2, SLOT_SIZE - lineWidth * 2)
+  context.fillRect(x, y, SLOT_SIZE, SLOT_SIZE)
 }
 
 export default {
