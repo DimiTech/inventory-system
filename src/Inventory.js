@@ -137,7 +137,7 @@ function render() {
     context.strokeRect(x, y, INVENTORY_CONFIG.ITEM_SIZE - lineWidth, INVENTORY_CONFIG.ITEM_SIZE - lineWidth);
 
     context.fillStyle = color;
-    context.fillRect(x, y, INVENTORY_CONFIG.ITEM_SIZE - lineWidth, INVENTORY_CONFIG.ITEM_SIZE - lineWidth);
+    context.fillRect(x, y, INVENTORY_CONFIG.ITEM_SIZE - (lineWidth * 2), INVENTORY_CONFIG.ITEM_SIZE - (lineWidth * 2));
   }
 }
 
