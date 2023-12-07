@@ -1,10 +1,5 @@
-Live demo: http://dusandimitric.com/refresh-rate-independent-game-loop-poc/
+Live demo: https://dimitech.io/inventory-system/
 
-With insights from: https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame, especially this part:
+### Resources
 
-> Warning: Be sure to always use the first argument (or some other method for
-> getting the current time) to calculate how much the animation will progress
-> in a frame, otherwise the animation will run faster on high refresh rate
-> screens. Check the example below for a way to do this. 
-
-### Controls: `w` `a` `s` `d`,`arrow keys`
+Item Spritesheet downloaded from: https://www.spriters-resource.com/pc_computer/diablodiablohellfire/sheet/59437

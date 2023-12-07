@@ -1,52 +1,45 @@
 import CONFIG from './Config.js'
 
-import { canvas, context } from './Canvas.js'
+import inventorySlots from './InventorySlots.js'
+import { createItem } from './Items.js'
 
 const { SCALE } = CONFIG
 
 const INVENTORY_CONFIG = {
-  ITEM_SIZE: 32,
+  SLOT_SIZE: 28,
   COLS: 8,
   ROWS: 6,
-  COLORS: {
-    GREEN: 'rgba(180, 220, 180, 0.5)',
-    RED: 'rgba(220, 180, 180, 0.5)'
-  }
 }
 INVENTORY_CONFIG.START = {
-  X: (canvas.width / 2) - ((INVENTORY_CONFIG.ITEM_SIZE) * INVENTORY_CONFIG.COLS / 2), // center X
-  Y: (canvas.height / 2) - ((INVENTORY_CONFIG.ITEM_SIZE) * INVENTORY_CONFIG.ROWS / 2) // center Y
+  X: canvas.width / 2 - (INVENTORY_CONFIG.SLOT_SIZE * INVENTORY_CONFIG.COLS) / 2, // center X
+  Y: canvas.height / 2 - (INVENTORY_CONFIG.SLOT_SIZE * INVENTORY_CONFIG.ROWS) / 2, // center Y
 }
 
 const STATE = {
-  inventorySlots: [],
   inventoryOpen: false,
+  inventorySlots: [],
   isMouseDragging: false,
-  draggedInventorySlot: undefined
-}
-
-function createInventorySlot(col, row, x, y, color) {
-  return {
-    col,
-    row,
-    x,
-    y,
-    color
-  }
+  draggedItem: null,
+  draggedInventorySlot: undefined,
 }
 
 // Initialize state
 for (let col = 0; col < INVENTORY_CONFIG.COLS; ++col) {
   for (let row = 0; row < INVENTORY_CONFIG.ROWS; ++row) {
-    STATE.inventorySlots.push(createInventorySlot(
-      col,
-      row,
-      INVENTORY_CONFIG.START.X + col * INVENTORY_CONFIG.ITEM_SIZE,
-      INVENTORY_CONFIG.START.Y + row * INVENTORY_CONFIG.ITEM_SIZE,
-      INVENTORY_CONFIG.COLORS.GREEN
-    ))
+    STATE.inventorySlots.push(
+      inventorySlots.create(
+        col,
+        row,
+        INVENTORY_CONFIG.START.X + col * INVENTORY_CONFIG.SLOT_SIZE,
+        INVENTORY_CONFIG.START.Y + row * INVENTORY_CONFIG.SLOT_SIZE,
+      ),
+    )
   }
 }
+
+// TODO: Temporary item initialization
+STATE.inventorySlots[0].storedItem = createItem()
+STATE.inventorySlots[INVENTORY_CONFIG.ROWS * 1].storedItem = createItem()
 
 function setup() {
   setupEventListeners()
@@ -63,21 +56,21 @@ function setupEventListeners() {
 
       if (STATE.inventoryOpen) {
         setupMouseListeners()
-      }
-      else {
+      } else {
         removeMouseListeners()
       }
     }
   })
-
 }
 
 function setupMouseListeners() {
   canvas.addEventListener('mousedown', handleMouseDown)
+  canvas.addEventListener('mousemove', handleMouseHover)
   canvas.addEventListener('mouseup', handleMouseUp)
 }
 function removeMouseListeners() {
   canvas.removeEventListener('mousedown', handleMouseDown)
+  canvas.removeEventListener('mousemove', handleMouseHover)
   canvas.removeEventListener('mouseup', handleMouseUp)
 }
 function handleMouseDown(e) {
@@ -88,40 +81,66 @@ function handleMouseDown(e) {
   const y = Math.floor(layerY / SCALE)
 
   if (isWithinInventory(x, y)) {
-    STATE.draggedInventorySlot = findClickedInventorySlot(x, y)
-    STATE.draggedInventorySlot.color = INVENTORY_CONFIG.COLORS.RED
+    STATE.draggedInventorySlot = findInventorySlotAtCoordinates(x, y)
+    STATE.draggedItem = STATE.draggedInventorySlot.storedItem || null
+  }
+}
+function handleMouseHover(e) {
+  if (STATE.isMouseDragging) {
+    const { layerX, layerY } = e
+    const x = Math.floor(layerX / SCALE)
+    const y = Math.floor(layerY / SCALE)
+
+    if (isWithinInventory(x, y)) {
+      STATE.inventorySlots.forEach(s => s.unhighlight())
+      const slotUnderCursor = findInventorySlotAtCoordinates(x, y)
+      slotUnderCursor.highlight()
+    }
   }
 }
 function handleMouseUp(e) {
   STATE.isMouseDragging = false
   if (STATE.draggedInventorySlot) {
-    STATE.draggedInventorySlot.color = INVENTORY_CONFIG.COLORS.GREEN
+    const { layerX, layerY } = e
+    const x = Math.floor(layerX / SCALE)
+    const y = Math.floor(layerY / SCALE)
+
+    if (isWithinInventory(x, y)) {
+      const targetInventorySlot = findInventorySlotAtCoordinates(x, y)
+      if (targetInventorySlot.storedItem === null) {
+        targetInventorySlot.storedItem = STATE.draggedItem
+        STATE.draggedInventorySlot.storedItem = null
+      }
+      targetInventorySlot.unhighlight()
+    }
+
+    STATE.draggedInventorySlot.unhighlight()
     STATE.draggedInventorySlot = null
+    STATE.draggedItem = null
   }
 }
 
+function getMouseCoordinatesFromEvent(e) {}
 
 function isWithinInventory(x, y) {
   return (
     x > INVENTORY_CONFIG.START.X &&
-    x < INVENTORY_CONFIG.START.X + INVENTORY_CONFIG.COLS * INVENTORY_CONFIG.ITEM_SIZE &&
+    x < INVENTORY_CONFIG.START.X + INVENTORY_CONFIG.COLS * INVENTORY_CONFIG.SLOT_SIZE &&
     y > INVENTORY_CONFIG.START.Y &&
-    y < INVENTORY_CONFIG.START.Y + INVENTORY_CONFIG.ROWS * INVENTORY_CONFIG.ITEM_SIZE
+    y < INVENTORY_CONFIG.START.Y + INVENTORY_CONFIG.ROWS * INVENTORY_CONFIG.SLOT_SIZE
   )
 }
 
-function findClickedInventorySlot(x, y) {
-  return STATE.inventorySlots.find(slot => (
-    slot.x < x && slot.x + INVENTORY_CONFIG.ITEM_SIZE >= x &&
-    slot.y < y && slot.y + INVENTORY_CONFIG.ITEM_SIZE >= y
-  ))
+function findInventorySlotAtCoordinates(x, y) {
+  return STATE.inventorySlots.find(
+    slot =>
+      slot.x < x && slot.x + INVENTORY_CONFIG.SLOT_SIZE >= x && slot.y < y && slot.y + INVENTORY_CONFIG.SLOT_SIZE >= y,
+  )
 }
 
 function update() {
   // TODO: Implement (or delete)?
 }
-
-const strokeStyle = 'rgba(0, 0, 0, 0.5)';
 
 function render() {
   if (!STATE.inventoryOpen) {
@@ -129,20 +148,18 @@ function render() {
   }
 
   for (const inventorySlot of STATE.inventorySlots) {
-    const { x, y, color } = inventorySlot
+    inventorySlot.render(INVENTORY_CONFIG.SLOT_SIZE)
+  }
 
-    const lineWidth = 1
-    context.lineWidth = lineWidth
-    context.strokeStyle = strokeStyle
-    context.strokeRect(x, y, INVENTORY_CONFIG.ITEM_SIZE - lineWidth, INVENTORY_CONFIG.ITEM_SIZE - lineWidth);
+  const slotsThatStoreItems = STATE.inventorySlots.filter(slot => slot.storedItem !== null)
 
-    context.fillStyle = color;
-    context.fillRect(x, y, INVENTORY_CONFIG.ITEM_SIZE - (lineWidth * 2), INVENTORY_CONFIG.ITEM_SIZE - (lineWidth * 2));
+  for (const slot of slotsThatStoreItems) {
+    slot.storedItem.render(INVENTORY_CONFIG.SLOT_SIZE, slot) // TODO: Somehow share the INVENTORY_CONFIG -> setup() function
   }
 }
 
 export default {
   setup,
   update,
-  render
+  render,
 }
