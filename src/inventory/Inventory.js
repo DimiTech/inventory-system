@@ -1,12 +1,12 @@
 import CONFIG from '../Config.js'
 
 import inventorySlots from './InventorySlots.js'
-import { createItem } from './InventoryItems.js'
+import { ItemFactory } from '../items/Item.js'
 
 const { SCALE } = CONFIG
 
 const INVENTORY_CONFIG = {
-  SLOT_SIZE: 28,
+  SLOT_SIZE: CONFIG.INVENTORY.SLOT_SIZE,
   SLOT_GAP: 10,
   COLS: 8,
   ROWS: 6,
@@ -53,9 +53,9 @@ for (let row = 0; row < INVENTORY_CONFIG.ROWS; ++row) {
 }
 
 // TODO: Temporary item initialization
-STATE.inventorySlots[0].storedItem = createItem()
-STATE.inventorySlots[1].storedItem = createItem()
-STATE.inventorySlots[2].storedItem = createItem()
+STATE.inventorySlots[0].storedItem = ItemFactory.createItemHealthPotion()
+STATE.inventorySlots[1].storedItem = ItemFactory.createItemHealthPotionLarge()
+STATE.inventorySlots[2].storedItem = ItemFactory.createItemHealthPotion()
 
 function setup() {
   setupEventListeners()
