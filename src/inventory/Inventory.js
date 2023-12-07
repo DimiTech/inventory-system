@@ -181,6 +181,9 @@ function update() {
   // TODO: Implement (or delete)?
 }
 
+// Used to render the Dragged Item on top of other Items
+let draggedItemRenderFunction = null
+
 function render() {
   if (!STATE.inventoryOpen) {
     return
@@ -200,8 +203,14 @@ function render() {
       x = STATE.draggingCoordinates.x - INVENTORY_CONFIG.HALF_SLOT_SIZE
       y = STATE.draggingCoordinates.y - INVENTORY_CONFIG.HALF_SLOT_SIZE
     }
-    inventorySlot.storedItem.render(INVENTORY_CONFIG.SLOT_SIZE, x, y) // TODO: Somehow share the INVENTORY_CONFIG -> setup() function
+    if (STATE.draggedItem && STATE.draggedItem === inventorySlot.storedItem) {
+      draggedItemRenderFunction = () => inventorySlot.storedItem.render(x, y)
+    } else {
+      inventorySlot.storedItem.render(x, y)
+    }
   }
+  draggedItemRenderFunction && draggedItemRenderFunction()
+  draggedItemRenderFunction = null
 }
 
 export default {
