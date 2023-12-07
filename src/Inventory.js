@@ -10,6 +10,7 @@ const INVENTORY_CONFIG = {
   COLS: 8,
   ROWS: 6,
 }
+INVENTORY_CONFIG.HALF_SLOT_SIZE = Math.floor(INVENTORY_CONFIG.SLOT_SIZE / 2)
 INVENTORY_CONFIG.START = {
   X: canvas.width / 2 - (INVENTORY_CONFIG.SLOT_SIZE * INVENTORY_CONFIG.COLS) / 2, // center X
   Y: canvas.height / 2 - (INVENTORY_CONFIG.SLOT_SIZE * INVENTORY_CONFIG.ROWS) / 2, // center Y
@@ -19,6 +20,10 @@ const STATE = {
   inventoryOpen: false,
   inventorySlots: [],
   isMouseDragging: false,
+  draggingCoordinates: {
+    x: null,
+    y: null,
+  },
   draggedItem: null,
   draggedInventorySlot: undefined,
 }
@@ -40,6 +45,7 @@ for (let col = 0; col < INVENTORY_CONFIG.COLS; ++col) {
 // TODO: Temporary item initialization
 STATE.inventorySlots[0].storedItem = createItem()
 STATE.inventorySlots[INVENTORY_CONFIG.ROWS * 1].storedItem = createItem()
+STATE.inventorySlots[INVENTORY_CONFIG.ROWS * 2].storedItem = createItem()
 
 function setup() {
   setupEventListeners()
@@ -76,13 +82,20 @@ function removeMouseListeners() {
 function handleMouseDown(e) {
   STATE.isMouseDragging = true
 
+  // TODO: Remove this repetition
   const { layerX, layerY } = e
   const x = Math.floor(layerX / SCALE)
   const y = Math.floor(layerY / SCALE)
 
+  STATE.draggingCoordinates.x = x
+  STATE.draggingCoordinates.y = y
+
   if (isWithinInventory(x, y)) {
     STATE.draggedInventorySlot = findInventorySlotAtCoordinates(x, y)
     STATE.draggedItem = STATE.draggedInventorySlot.storedItem || null
+    if (STATE.draggedItem) {
+      STATE.draggedItem.dragged = true
+    }
   }
 }
 function handleMouseHover(e) {
@@ -91,8 +104,12 @@ function handleMouseHover(e) {
     const x = Math.floor(layerX / SCALE)
     const y = Math.floor(layerY / SCALE)
 
+    STATE.draggingCoordinates.x = x
+    STATE.draggingCoordinates.y = y
+
+    STATE.inventorySlots.forEach(s => s.unhighlight())
+
     if (isWithinInventory(x, y)) {
-      STATE.inventorySlots.forEach(s => s.unhighlight())
       const slotUnderCursor = findInventorySlotAtCoordinates(x, y)
       slotUnderCursor.highlight()
     }
@@ -100,6 +117,9 @@ function handleMouseHover(e) {
 }
 function handleMouseUp(e) {
   STATE.isMouseDragging = false
+  STATE.draggingCoordinates.x = null
+  STATE.draggingCoordinates.y = null
+
   if (STATE.draggedInventorySlot) {
     const { layerX, layerY } = e
     const x = Math.floor(layerX / SCALE)
@@ -111,16 +131,16 @@ function handleMouseUp(e) {
         targetInventorySlot.storedItem = STATE.draggedItem
         STATE.draggedInventorySlot.storedItem = null
       }
-      targetInventorySlot.unhighlight()
     }
 
-    STATE.draggedInventorySlot.unhighlight()
+    STATE.inventorySlots.forEach(s => s.unhighlight())
     STATE.draggedInventorySlot = null
+    if (STATE.draggedItem) {
+      STATE.draggedItem.dragged = false
+    }
     STATE.draggedItem = null
   }
 }
-
-function getMouseCoordinatesFromEvent(e) {}
 
 function isWithinInventory(x, y) {
   return (
@@ -151,10 +171,17 @@ function render() {
     inventorySlot.render(INVENTORY_CONFIG.SLOT_SIZE)
   }
 
-  const slotsThatStoreItems = STATE.inventorySlots.filter(slot => slot.storedItem !== null)
-
-  for (const slot of slotsThatStoreItems) {
-    slot.storedItem.render(INVENTORY_CONFIG.SLOT_SIZE, slot) // TODO: Somehow share the INVENTORY_CONFIG -> setup() function
+  // TODO: HINT: Possible spot for optimization!
+  //       We are iterating through `STATE.inventorySlots` for the second time here
+  //       to be sure that the Items are being rendered on top of the Slots
+  for (const inventorySlot of STATE.inventorySlots.filter(slot => slot.storedItem)) {
+    let x = inventorySlot.x
+    let y = inventorySlot.y
+    if (STATE.isMouseDragging && inventorySlot.storedItem.dragged) {
+      x = STATE.draggingCoordinates.x - INVENTORY_CONFIG.HALF_SLOT_SIZE
+      y = STATE.draggingCoordinates.y - INVENTORY_CONFIG.HALF_SLOT_SIZE
+    }
+    inventorySlot.storedItem.render(INVENTORY_CONFIG.SLOT_SIZE, x, y) // TODO: Somehow share the INVENTORY_CONFIG -> setup() function
   }
 }
 

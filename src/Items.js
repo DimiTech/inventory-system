@@ -1,7 +1,5 @@
 import { context } from './Canvas.js'
 
-// Occupied
-
 const itemSpriteSheetURLS = {
   healthPotion: './assets/sprites/items.png',
 }
@@ -16,13 +14,13 @@ function loadSprite(spriteURL) {
 
 const healthPotionSprite = await loadSprite(itemSpriteSheetURLS.healthPotion)
 
-function render(SLOT_SIZE, slot) {
+function render(SLOT_SIZE, x, y) {
   if ((!healthPotionSprite) instanceof Image) {
     return
   }
 
-  const canvasX = slot.x
-  const canvasY = slot.y
+  const canvasX = x
+  const canvasY = y
 
   context.drawImage(
     healthPotionSprite,
@@ -41,6 +39,7 @@ function createItem() {
   return {
     sizeCols: 1,
     sizeRows: 1,
+    dragged: false,
     render,
   }
 }

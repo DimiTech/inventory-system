@@ -1,5 +1,7 @@
 import { context } from './Canvas.js'
 
+// Occupied - good word
+
 const INVENTORY_SLOT_CONFIG = {
   STROKE_STYLE: 'rgba(0, 0, 0, 0.5)',
   COLORS: {
@@ -17,11 +19,19 @@ function create(col, row, x, y, color = INVENTORY_SLOT_CONFIG.COLORS.GREEN) {
     color,
     render,
     storedItem: null,
+    isHighlighted: false, // Just for optimization
     highlight() {
+      if (this.isHighlighted) {
+        return
+      }
       this.color = INVENTORY_SLOT_CONFIG.COLORS.RED
+      this.isHighlighted = true
     },
     unhighlight() {
-      this.color = INVENTORY_SLOT_CONFIG.COLORS.GREEN
+      if (this.isHighlighted) {
+        this.color = INVENTORY_SLOT_CONFIG.COLORS.GREEN
+        this.isHighlighted = false
+      }
     },
   }
 }
