@@ -1,7 +1,7 @@
-import CONFIG from './Config.js'
+import CONFIG from '../Config.js'
 
 import inventorySlots from './InventorySlots.js'
-import { createItem } from './Items.js'
+import { createItem } from './InventoryItems.js'
 
 const { SCALE } = CONFIG
 

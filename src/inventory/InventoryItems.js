@@ -1,4 +1,4 @@
-import { context } from './Canvas.js'
+import { context } from '../Canvas.js'
 
 const itemSpriteSheetURLS = {
   healthPotion: './assets/sprites/items.png',

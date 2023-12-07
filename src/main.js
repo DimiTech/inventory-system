@@ -2,7 +2,8 @@ import { canvas, context } from './Canvas.js'
 
 import { calculateFrameRate, drawFPS } from './FrameRate.js'
 import { setupEventListeners } from './Keyboard.js'
-import inventory from './Inventory.js'
+
+import inventory from './inventory/Inventory.js'
 
 // ----------------------------------------------------------------------------
 // Time

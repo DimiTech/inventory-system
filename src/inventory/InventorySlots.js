@@ -1,6 +1,6 @@
-import { isFirefox } from './utils/BrowserDetection.js'
+import { isFirefox } from '../utils/BrowserDetection.js'
 
-import { context } from './Canvas.js'
+import { context } from '../Canvas.js'
 
 // Occupied - good word
 
