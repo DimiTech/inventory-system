@@ -92,6 +92,7 @@ function occupySpaceAroundSlot(slot, item) {
     for (let row = 0; row < item.sizeRows; ++row) {
       currentSlot = STATE.inventorySlots[startCol + col + (startRow + row) * INVENTORY_CONFIG.COLS]
       currentSlot.occupied = true
+      currentSlot.masterSlot = slot
     }
   }
   slot.storedItem = item
@@ -105,6 +106,9 @@ function spaceAroundSlotIsOccupied(slot, item) {
     for (let row = 0; row < item.sizeRows; ++row) {
       if (col === 0 && row === 0) {
         continue
+      }
+      if (col >= INVENTORY_CONFIG.COLS - 1 && row >= INVENTORY_CONFIG.ROWS - 1) {
+        return true
       }
 
       currentSlot = STATE.inventorySlots[startCol + col + (startRow + row) * INVENTORY_CONFIG.COLS]
@@ -124,6 +128,7 @@ function releaseSpaceAroundSlot(slot, item) {
     for (let row = 0; row < item.sizeRows; ++row) {
       currentSlot = STATE.inventorySlots[startCol + col + (startRow + row) * INVENTORY_CONFIG.COLS]
       currentSlot.occupied = false
+      currentSlot.masterSlot = null
     }
   }
   slot.storedItem = null
@@ -215,6 +220,7 @@ function setupEventListeners() {
       STATE.inventorySlots
         .map(slot => {
           slot.occupied = false
+          slot.masterSlot = null
           return slot
         })
         .filter(slot => slot.storedItem)
@@ -290,39 +296,47 @@ function handleMouseUp(e) {
     const x = Math.floor(layerX / SCALE)
     const y = Math.floor(layerY / SCALE)
 
-    if (isWithinInventory(x, y)) {
-      const targetInventorySlot = findInventorySlotAtCoordinates(x, y)
-      if (!targetInventorySlot) {
-        return
-      }
-      if (
-        targetInventorySlot.storedItem === null &&
-        targetInventorySlot.occupied === false &&
-        !spaceAroundSlotIsOccupied(targetInventorySlot, STATE.draggedItem)
-      ) {
-        targetInventorySlot.storedItem = STATE.draggedItem
-        occupySpaceAroundSlot(targetInventorySlot, targetInventorySlot.storedItem)
-        releaseSpaceAroundSlot(STATE.draggedInventorySlot, STATE.draggedItem)
-      } else if (CONFIG.INVENTORY.ITEM_SWAPPING_ENABLED) {
-        const targetItem = targetInventorySlot.storedItem
-
-        // TODO: This shit
-        if (
-          !spaceAroundSlotIsOccupied(targetInventorySlot, STATE.draggedItem) &&
-          !spaceAroundSlotIsOccupied(STATE.draggedInventorySlot, targetItem) &&
-          // If we're actually dragging an item and we're not dropping an item on itself:
-          STATE.draggedItem &&
-          targetItem !== STATE.draggedItem
-        ) {
-          targetInventorySlot.storedItem = STATE.draggedItem
-          STATE.draggedInventorySlot.storedItem = targetItem
-          console.log('OCCUPIED!')
-        }
-      }
-    } else if (STATE.draggedItem) {
+    if (isWithinInventory(x, y) === false && STATE.draggedItem) {
       removeItem(STATE.draggedItem, x - INVENTORY_CONFIG.HALF_SLOT_SIZE, y - INVENTORY_CONFIG.HALF_SLOT_SIZE)
     }
 
+    const targetInventorySlot = findInventorySlotAtCoordinates(x, y)
+    if (!targetInventorySlot) {
+      return
+    }
+    if (targetInventorySlot.storedItem === null && targetInventorySlot.occupied === false) {
+      if (!spaceAroundSlotIsOccupied(targetInventorySlot, STATE.draggedItem)) {
+        targetInventorySlot.storedItem = STATE.draggedItem
+        occupySpaceAroundSlot(targetInventorySlot, targetInventorySlot.storedItem)
+        releaseSpaceAroundSlot(STATE.draggedInventorySlot, STATE.draggedItem)
+        return cleanDraggingState()
+      }
+    } else if (CONFIG.INVENTORY.ITEM_SWAPPING_ENABLED) {
+      const targetSlot = targetInventorySlot || targetInventorySlot.masterSlot
+      const targetItem = targetSlot.storedItem || targetSlot.masterSlot.storedItem
+
+      if (
+        STATE.draggedItem &&
+        // If we're actually dragging an item and we're not dropping an item on itself:
+        targetItem !== STATE.draggedItem &&
+        !spaceAroundSlotIsOccupied(targetSlot, STATE.draggedItem) &&
+        !spaceAroundSlotIsOccupied(STATE.draggedInventorySlot, targetItem)
+      ) {
+        releaseSpaceAroundSlot(targetSlot, targetItem)
+        releaseSpaceAroundSlot(STATE.draggedInventorySlot, STATE.draggedInventorySlot.storedItem)
+
+        targetSlot.storedItem = STATE.draggedItem
+        occupySpaceAroundSlot(targetSlot, targetSlot.storedItem)
+
+        STATE.draggedInventorySlot.storedItem = targetItem
+        occupySpaceAroundSlot(STATE.draggedInventorySlot, STATE.draggedInventorySlot.storedItem)
+      }
+    }
+
+    cleanDraggingState()
+  }
+
+  function cleanDraggingState() {
     STATE.inventorySlots.forEach(s => s.unhighlight())
     STATE.draggedInventorySlot = null
     if (STATE.draggedItem) {

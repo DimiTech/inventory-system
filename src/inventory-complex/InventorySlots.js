@@ -22,6 +22,7 @@ function create(col, row, x, y, color = INVENTORY_SLOT_CONFIG.COLORS.BLUE) {
     render,
     storedItem: null,
     occupied: false,
+    masterSlot: null,
     isHighlighted: false, // Just for optimization
     highlight() {
       if (this.isHighlighted) {
