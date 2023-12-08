@@ -120,6 +120,33 @@ function spaceAroundSlotIsOccupied(slot, item) {
   return false
 }
 
+function spaceAroundSlotIsOccupiedWithItemsOtherThanThisOne(slot, item) {
+  const startCol = slot.col
+  const startRow = slot.row
+  let currentSlot
+  for (let col = 0; col < item.sizeCols; ++col) {
+    for (let row = 0; row < item.sizeRows; ++row) {
+      if (col === 0 && row === 0) {
+        continue
+      }
+      if (col >= INVENTORY_CONFIG.COLS - 1 && row >= INVENTORY_CONFIG.ROWS - 1) {
+        return true
+      }
+
+      currentSlot = STATE.inventorySlots[startCol + col + (startRow + row) * INVENTORY_CONFIG.COLS]
+      if (!currentSlot) {
+        return true
+      }
+      if (currentSlot.masterSlot === slot) {
+        continue
+      } else if (currentSlot.occupied) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
 function releaseSpaceAroundSlot(slot, item) {
   const startCol = slot.col
   const startRow = slot.row
@@ -321,13 +348,17 @@ function handleMouseUp(e) {
       const targetSlot = targetInventorySlot || targetInventorySlot.masterSlot
       const targetItem = targetSlot.storedItem || targetSlot.masterSlot.storedItem
 
+      console.log('targetSlot:', targetSlot)
+      console.log('STATE.draggedInventorySlot:', STATE.draggedInventorySlot)
+
       if (
         STATE.draggedItem &&
         // If we're actually dragging an item and we're not dropping an item on itself:
         targetItem !== STATE.draggedItem &&
-        !spaceAroundSlotIsOccupied(targetSlot, STATE.draggedItem) &&
-        !spaceAroundSlotIsOccupied(STATE.draggedInventorySlot, targetItem)
+        !spaceAroundSlotIsOccupiedWithItemsOtherThanThisOne(targetSlot, STATE.draggedItem) &&
+        !spaceAroundSlotIsOccupiedWithItemsOtherThanThisOne(STATE.draggedInventorySlot, targetItem)
       ) {
+        console.log('entered')
         releaseSpaceAroundSlot(targetSlot, targetItem)
         releaseSpaceAroundSlot(STATE.draggedInventorySlot, STATE.draggedInventorySlot.storedItem)
 
