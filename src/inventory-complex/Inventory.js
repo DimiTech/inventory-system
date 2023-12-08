@@ -56,7 +56,8 @@ for (let row = 0; row < INVENTORY_CONFIG.ROWS; ++row) {
 }
 
 function addItem(item) {
-  const firstEmptySlot = STATE.inventorySlots.find(slot => !slot.storedItem)
+  const firstEmptySlot = findEnoughSlotsForItem(item)
+
   if (!firstEmptySlot) {
     console.log('Inventory Full!')
     return
@@ -66,6 +67,67 @@ function addItem(item) {
   item.x = null
   item.y = null
   firstEmptySlot.storedItem = item
+}
+
+function findEnoughSlotsForItem(item) {
+  return STATE.inventorySlots.find(slot => {
+    if (slot.storedItem) {
+      return false
+    }
+    if (item.sizeCols > 1) {
+      let currentSlot
+      for (let relativeCol = 0; relativeCol < item.sizeCols - 1; ++relativeCol) {
+        currentSlot = STATE.inventorySlots[slot.col + slot.row * INVENTORY_CONFIG.COLS + relativeCol]
+
+        if (!currentSlot) {
+          return false
+        }
+
+        const slotToTheRight = getSlotToTheRight(currentSlot)
+        if (!slotToTheRight || slotToTheRight.storedItem) {
+          return false
+        }
+      }
+    }
+    // TODO: Handle overflow (when placing big items at the bottom)
+
+    // TODO: Handle diagonal occupation bug
+    // Right now you can place a 2x3 item in slots where the [1, 2] slot is taken!
+    if (item.sizeRows > 1) {
+      let currentSlot
+      for (let relativeRow = 0; relativeRow < item.sizeRows - 1; ++relativeRow) {
+        currentSlot = STATE.inventorySlots[slot.col + (slot.row + relativeRow) * INVENTORY_CONFIG.COLS]
+
+        if (!currentSlot) {
+          return false
+        }
+
+        const slotToTheBottom = getSlotToTheBottom(currentSlot)
+        if (!slotToTheBottom || slotToTheBottom.storedItem) {
+          return false
+        }
+      }
+    }
+    return true
+  })
+}
+
+function getSlotToTheRight(slot) {
+  const nextCol = slot.col + 1
+  if (slot.col % INVENTORY_CONFIG.COLS === (nextCol % INVENTORY_CONFIG.COLS) - 1) {
+    return STATE.inventorySlots[nextCol + slot.row * INVENTORY_CONFIG.COLS]
+  } else {
+    return null
+  }
+}
+function getSlotToTheBottom(slot) {
+  const nextRow = slot.row + 1
+
+  if (nextRow > INVENTORY_CONFIG.ROWS) {
+    return null
+  }
+
+  return STATE.inventorySlots[slot.col + nextRow * INVENTORY_CONFIG.COLS]
 }
 
 function removeItem(item, worldX, worldY) {
