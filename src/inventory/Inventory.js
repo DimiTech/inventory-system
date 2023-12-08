@@ -100,6 +100,20 @@ function setupEventListeners() {
         removeMouseListeners()
       }
     }
+
+    if (e.key === 'r' || e.key === 'R') {
+      // Sort Items (in a very basic way)
+      STATE.inventorySlots
+        .filter(slot => slot.storedItem)
+        .map(slot => {
+          const item = slot.storedItem
+          slot.storedItem = null
+          return item
+        })
+        .forEach((item, index) => {
+          STATE.inventorySlots[index].storedItem = item
+        })
+    }
   })
 }
 
