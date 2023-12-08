@@ -154,7 +154,7 @@ for (let i = 0; i < 5 + Math.ceil(Math.random() * 40); ++i) {
   const randomFactoryIndex = Math.floor(Math.random() * itemFactories.length)
   items.push(itemFactories[randomFactoryIndex](generateItemPositionX(), generateItemPositionY()))
 }
-for (let i = 0; i < 20; ++i) {
+for (let i = 0; i < 2; ++i) {
   const newItem = PotionItemFactory.createHealthSmall(100, 100)
   items.push(newItem)
   inventory.addItem(newItem)

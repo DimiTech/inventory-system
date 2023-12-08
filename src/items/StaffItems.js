@@ -12,17 +12,21 @@ const staffCols = 2
 const staffRows = 3
 
 function createStaffItemFactory(createItem) {
+  function createStaffItem(...args) {
+    return createItem('staff', ...args)
+  }
+
   return {
     createStaff1(x, y) {
       return {
-        ...createItem(x, y, staffCols, staffRows),
+        ...createStaffItem(x, y, staffCols, staffRows),
         spriteX: staffSpriteSegment.x,
         spriteY: staffSpriteSegment.y,
       }
     },
     createStaff2(x, y) {
       return {
-        ...createItem(x, y, staffCols, staffRows),
+        ...createStaffItem(x, y, staffCols, staffRows),
         spriteX: staffSpriteSegment.x + staffSpriteSegment.gapX * 1 + SLOT_SIZE * staffCols * 1,
         spriteY: staffSpriteSegment.y,
       }
@@ -30,7 +34,7 @@ function createStaffItemFactory(createItem) {
 
     createStaff3(x, y) {
       return {
-        ...createItem(x, y, staffCols, staffRows),
+        ...createStaffItem(x, y, staffCols, staffRows),
         spriteX: staffSpriteSegment.x + staffSpriteSegment.gapX * 2 + SLOT_SIZE * staffCols * 2,
         spriteY: staffSpriteSegment.y,
       }

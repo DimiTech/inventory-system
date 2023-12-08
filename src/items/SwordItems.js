@@ -11,17 +11,20 @@ const swordSpriteSegment = {
 const swordRows = 3
 
 function createSwordItemFactory(createItem) {
+  function createSwordItem(...args) {
+    return createItem('sword', ...args)
+  }
   return {
     createSword1(x, y) {
       return {
-        ...createItem(x, y, undefined, swordRows),
+        ...createSwordItem(x, y, undefined, swordRows),
         spriteX: swordSpriteSegment.x,
         spriteY: swordSpriteSegment.y,
       }
     },
     createSword2(x, y) {
       return {
-        ...createItem(x, y, undefined, swordRows),
+        ...createSwordItem(x, y, undefined, swordRows),
         spriteX: swordSpriteSegment.x + (swordSpriteSegment.gapX + SLOT_SIZE) * 1,
         spriteY: swordSpriteSegment.y,
       }
@@ -29,7 +32,7 @@ function createSwordItemFactory(createItem) {
 
     createSword3(x, y) {
       return {
-        ...createItem(x, y, undefined, swordRows),
+        ...createSwordItem(x, y, undefined, swordRows),
         spriteX: swordSpriteSegment.x + (swordSpriteSegment.gapX + SLOT_SIZE) * 2,
         spriteY: swordSpriteSegment.y,
       }

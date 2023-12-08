@@ -74,8 +74,9 @@ function renderInWorld() {
   }
 }
 
-function createItem(x, y, sizeCols = 1, sizeRows = 1) {
+function createItem(name, x, y, sizeCols = 1, sizeRows = 1) {
   return {
+    name,
     x,
     y,
     sizeCols,

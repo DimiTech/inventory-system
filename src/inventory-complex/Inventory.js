@@ -55,6 +55,27 @@ for (let row = 0; row < INVENTORY_CONFIG.ROWS; ++row) {
   }
 }
 
+function DEBUG_inventoryPrettyPrint() {
+  const printableArray = []
+  for (let row = 0; row < INVENTORY_CONFIG.ROWS; ++row) {
+    printableArray.push([])
+    for (let col = 0; col < INVENTORY_CONFIG.COLS; ++col) {
+      printableArray[row].push(STATE.inventorySlots[col + row * INVENTORY_CONFIG.COLS])
+    }
+  }
+
+  let printString = ''
+  printableArray.forEach(row => {
+    row.map(slot => {
+      printString += `${slot.col} ${slot.row} ${(slot.storedItem?.name || (slot?.masterSlot && '(slave)') || '').padEnd(
+        12,
+      )} | `
+    }),
+      (printString += '\n')
+  })
+  console.log(printString)
+}
+
 function addItem(item) {
   const firstEmptySlot = findEnoughSlotsForItem(item)
 
@@ -345,38 +366,73 @@ function handleMouseUp(e) {
         return cleanDraggingState()
       }
     } else if (CONFIG.INVENTORY.ITEM_SWAPPING_ENABLED) {
-      const targetSlot = targetInventorySlot.masterSlot || targetInventorySlot
-      const targetItem = targetSlot.storedItem || targetSlot.masterSlot.storedItem
+      const targetSlot = targetInventorySlot
+      const targetSlotMaster = targetInventorySlot.masterSlot
+      const targetItem = targetSlot.storedItem
+      const targetSlotMasterItem = targetSlot.masterSlot?.storedItem || null
 
       // If we're actually dropping an Item on one of its own slots
       if (
-        targetItem === STATE.draggedItem &&
-        !spaceAroundSlotIsOccupiedWithItemsOtherThanThisOne(targetSlot, STATE.draggedItem)
+        targetSlotMasterItem === STATE.draggedItem &&
+        !spaceAroundSlotIsOccupiedWithItemsOtherThanThisOne(targetSlotMaster, STATE.draggedItem)
       ) {
         releaseSpaceAroundSlot(STATE.draggedInventorySlot, STATE.draggedItem)
-        targetSlot.storedItem = targetItem
-        occupySpaceAroundSlot(targetInventorySlot, targetInventorySlot.storedItem)
+        targetSlot.storedItem = targetSlotMasterItem
+        occupySpaceAroundSlot(targetSlot, targetSlot.storedItem)
         return cleanDraggingState()
       }
 
       if (
         STATE.draggedItem &&
         !spaceAroundSlotIsOccupiedWithItemsOtherThanThisOne(targetSlot, STATE.draggedItem) &&
-        !spaceAroundSlotIsOccupiedWithItemsOtherThanThisOne(STATE.draggedInventorySlot, targetItem)
+        !spaceAroundSlotIsOccupiedWithItemsOtherThanThisOne(
+          STATE.draggedInventorySlot,
+          targetItem || targetSlotMasterItem,
+        )
       ) {
-        console.log('entered')
-        releaseSpaceAroundSlot(targetSlot, targetItem)
+        console.log('entered 1')
+        console.log({ targetSlot })
+        console.log({ targetSlotMaster })
+        console.log({ targetItem })
+        console.log({ targetSlotMasterItem })
+
+        releaseSpaceAroundSlot(targetSlot || targetSlotMaster, targetItem || targetSlotMasterItem)
+
+        // console.log(' entered 2')
+
         releaseSpaceAroundSlot(STATE.draggedInventorySlot, STATE.draggedInventorySlot.storedItem)
 
+        // console.log('  entered 3')
+
         targetSlot.storedItem = STATE.draggedItem
+
+        // console.log('   entered 4')
+
+        console.log('Item 1:', targetSlot.storedItem)
         occupySpaceAroundSlot(targetSlot, targetSlot.storedItem)
 
-        STATE.draggedInventorySlot.storedItem = targetItem
-        occupySpaceAroundSlot(STATE.draggedInventorySlot, STATE.draggedInventorySlot.storedItem)
+        // console.log('    entered 5')
+
+        // console.log({ targetItem })
+        // console.log({ targetSlotMasterItem })
+
+        STATE.draggedInventorySlot.storedItem = targetItem || targetSlotMasterItem
+
+        console.log('Item 2:', STATE.draggedInventorySlot.storedItem)
+
+        // console.log('     entered 6')
+        // console.log('draggedItem:', STATE.draggedInventorySlot.storedItem)
+        // console.log('draggedItem 2:', STATE.draggedItem)
+
+        occupySpaceAroundSlot(STATE.draggedInventorySlot, targetItem || targetSlotMasterItem)
+        // console.log('      entered 7')
       }
     }
 
     cleanDraggingState()
+    // console.log('STATE.draggedInventorySlot.storedItem:', STATE.draggedInventorySlot.storedItem)
+
+    DEBUG_inventoryPrettyPrint()
   }
 
   // Basically a function that serves as a GOTO >:D
