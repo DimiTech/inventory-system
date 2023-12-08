@@ -137,7 +137,7 @@ function spaceAroundSlotIsOccupiedWithItemsOtherThanThisOne(slot, item) {
       if (!currentSlot) {
         return true
       }
-      if (currentSlot.masterSlot === slot) {
+      if (currentSlot.masterSlot === slot || currentSlot.masterSlot === slot.masterSlot) {
         continue
       } else if (currentSlot.occupied) {
         return true
@@ -348,13 +348,19 @@ function handleMouseUp(e) {
       const targetSlot = targetInventorySlot || targetInventorySlot.masterSlot
       const targetItem = targetSlot.storedItem || targetSlot.masterSlot.storedItem
 
-      console.log('targetSlot:', targetSlot)
-      console.log('STATE.draggedInventorySlot:', STATE.draggedInventorySlot)
+      // If we're actually dropping an Item on one of its own slots
+      if (
+        targetItem === STATE.draggedItem &&
+        !spaceAroundSlotIsOccupiedWithItemsOtherThanThisOne(targetSlot, STATE.draggedItem)
+      ) {
+        releaseSpaceAroundSlot(STATE.draggedInventorySlot, STATE.draggedItem)
+        targetSlot.storedItem = targetItem
+        occupySpaceAroundSlot(targetInventorySlot, targetInventorySlot.storedItem)
+        return cleanDraggingState()
+      }
 
       if (
         STATE.draggedItem &&
-        // If we're actually dragging an item and we're not dropping an item on itself:
-        targetItem !== STATE.draggedItem &&
         !spaceAroundSlotIsOccupiedWithItemsOtherThanThisOne(targetSlot, STATE.draggedItem) &&
         !spaceAroundSlotIsOccupiedWithItemsOtherThanThisOne(STATE.draggedInventorySlot, targetItem)
       ) {
@@ -373,6 +379,7 @@ function handleMouseUp(e) {
     cleanDraggingState()
   }
 
+  // Basically a function that serves as a GOTO >:D
   function cleanDraggingState() {
     STATE.inventorySlots.forEach(s => s.unhighlight())
     STATE.draggedInventorySlot = null
