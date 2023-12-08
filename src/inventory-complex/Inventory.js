@@ -421,6 +421,7 @@ function handleMouseUp(e) {
       // If we're actually dropping an Item on one of its own slots
       if (
         targetSlotMasterItem === STATE.draggedItem &&
+        !spaceAroundSlotIsOccupiedByItemsOtherThanTheOneAtTheSlot(targetSlot, STATE.draggedItem) &&
         !spaceAroundSlotIsOccupiedByItemsOtherThanTheOneAtTheSlot(targetSlotMaster, STATE.draggedItem)
       ) {
         if (
