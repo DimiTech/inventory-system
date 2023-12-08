@@ -2,6 +2,8 @@ import CONFIG from '../Config.js'
 
 import { context } from '../Canvas.js'
 import { createPotionItemFactory } from './PotionItems.js'
+import { createSwordItemFactory } from './SwordItems.js'
+import { createStaffItemFactory } from './StaffItems.js'
 
 const { SLOT_SIZE } = CONFIG.INVENTORY
 
@@ -31,12 +33,12 @@ function renderInInventory(x, y) {
     healthPotionSprite,
     this.spriteX, // Sprite start coordinates
     this.spriteY,
-    SLOT_SIZE * this.sizeCols, // Sprite crop dimensions
-    SLOT_SIZE * this.sizeRows,
+    this.width, // Sprite crop dimensions
+    this.height,
     canvasX, // Canvas destination
     canvasY,
-    SLOT_SIZE * this.sizeCols, // Canvas dimensions
-    SLOT_SIZE * this.sizeRows,
+    this.width, // Sprite crop dimensions
+    this.height,
   )
 }
 
@@ -46,22 +48,24 @@ function renderInWorld() {
       healthPotionSprite,
       this.spriteX, // Sprite start coordinates
       this.spriteY,
-      SLOT_SIZE * this.sizeCols, // Sprite crop dimensions
-      SLOT_SIZE * this.sizeRows,
+      this.width, // Sprite crop dimensions
+      this.height,
       this.x, // Canvas destination
       this.y,
-      SLOT_SIZE * this.sizeCols, // Canvas dimensions
-      SLOT_SIZE * this.sizeRows,
+      this.width, // Sprite crop dimensions
+      this.height,
     )
   }
 }
 
-function createItem(x, y) {
+function createItem(x, y, sizeCols = 1, sizeRows = 1) {
   return {
     x,
     y,
-    sizeCols: 1,
-    sizeRows: 1,
+    sizeCols,
+    sizeRows,
+    width: SLOT_SIZE * sizeCols,
+    height: SLOT_SIZE * sizeRows,
     dragged: false,
     storedInInventory: false,
     renderInInventory,
@@ -70,5 +74,7 @@ function createItem(x, y) {
 }
 
 const PotionItemFactory = createPotionItemFactory(createItem)
+const SwordItemFactory = createSwordItemFactory(createItem)
+const StaffItemFactory = createStaffItemFactory(createItem)
 
-export { PotionItemFactory }
+export { PotionItemFactory, SwordItemFactory, StaffItemFactory }

@@ -7,7 +7,7 @@ import { setupEventListeners } from './Keyboard.js'
 
 import inventorySimple from './inventory/Inventory.js'
 import inventoryComplex from './inventory-complex/Inventory.js'
-import { PotionItemFactory } from './items/Item.js'
+import { PotionItemFactory, SwordItemFactory, StaffItemFactory } from './items/Item.js'
 
 const { SLOT_SIZE } = CONFIG.INVENTORY
 
@@ -141,6 +141,14 @@ const itemFactories = [
   PotionItemFactory.createUnknown1,
   PotionItemFactory.createUnknown2,
 ]
+if (CONFIG.INVENTORY.COMPLEX) {
+  itemFactories.push(SwordItemFactory.createSword1)
+  itemFactories.push(SwordItemFactory.createSword2)
+  itemFactories.push(SwordItemFactory.createSword3)
+  itemFactories.push(StaffItemFactory.createStaff1)
+  itemFactories.push(StaffItemFactory.createStaff2)
+  itemFactories.push(StaffItemFactory.createStaff3)
+}
 
 for (let i = 0; i < 5 + Math.ceil(Math.random() * 40); ++i) {
   const randomFactoryIndex = Math.floor(Math.random() * itemFactories.length)
