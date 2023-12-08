@@ -5,10 +5,14 @@ import { canvas, context } from './Canvas.js'
 import { calculateFrameRate, drawFPS } from './FrameRate.js'
 import { setupEventListeners } from './Keyboard.js'
 
-import inventory from './inventory/Inventory.js'
+import inventorySimple from './inventory/Inventory.js'
+import inventoryComplex from './inventory-complex/Inventory.js'
 import { ItemFactory } from './items/Item.js'
 
 const { SLOT_SIZE } = CONFIG.INVENTORY
+
+// Inventory strategy
+const inventory = CONFIG.INVENTORY.COMPLEX ? inventoryComplex : inventorySimple
 
 // ----------------------------------------------------------------------------
 // Time
