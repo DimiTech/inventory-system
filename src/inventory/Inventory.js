@@ -156,10 +156,18 @@ function handleMouseUp(e) {
       if (targetInventorySlot.storedItem === null) {
         targetInventorySlot.storedItem = STATE.draggedItem
         STATE.draggedInventorySlot.storedItem = null
+      } else if (CONFIG.INVENTORY.ITEM_SWAPPING_ENABLED) {
+        const targetItem = targetInventorySlot.storedItem
+        if (STATE.draggedItem && targetItem !== STATE.draggedItem) {
+          // If we're actually dragging an item and we're not dropping an item on itself:
+          targetInventorySlot.storedItem = STATE.draggedItem
+          STATE.draggedInventorySlot.storedItem = targetItem
+        }
       }
     }
 
     STATE.inventorySlots.forEach(s => s.unhighlight())
+    // STATE.draggedInventorySlot.storedItem = null
     STATE.draggedInventorySlot = null
     if (STATE.draggedItem) {
       STATE.draggedItem.dragged = false

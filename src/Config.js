@@ -4,5 +4,6 @@ export default {
   SCALE: 2,
   INVENTORY: {
     SLOT_SIZE: 28,
+    ITEM_SWAPPING_ENABLED: true,
   },
 }
