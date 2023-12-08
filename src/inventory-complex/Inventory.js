@@ -338,7 +338,7 @@ function handleMouseUp(e) {
       return
     }
     if (targetInventorySlot.storedItem === null && targetInventorySlot.occupied === false) {
-      if (!spaceAroundSlotIsOccupied(targetInventorySlot, STATE.draggedItem)) {
+      if (STATE.draggedItem && !spaceAroundSlotIsOccupied(targetInventorySlot, STATE.draggedItem)) {
         targetInventorySlot.storedItem = STATE.draggedItem
         occupySpaceAroundSlot(targetInventorySlot, targetInventorySlot.storedItem)
         releaseSpaceAroundSlot(STATE.draggedInventorySlot, STATE.draggedItem)
