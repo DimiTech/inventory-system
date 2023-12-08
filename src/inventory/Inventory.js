@@ -53,9 +53,25 @@ for (let row = 0; row < INVENTORY_CONFIG.ROWS; ++row) {
 }
 
 // TODO: Temporary item initialization
-STATE.inventorySlots[0].storedItem = ItemFactory.createItemHealthPotion()
-STATE.inventorySlots[1].storedItem = ItemFactory.createItemHealthPotionLarge()
-STATE.inventorySlots[2].storedItem = ItemFactory.createItemHealthPotion()
+STATE.inventorySlots[0].storedItem = ItemFactory.createItemPotionHealthLarge()
+STATE.inventorySlots[1].storedItem = ItemFactory.createItemPotionHealth()
+STATE.inventorySlots[2].storedItem = ItemFactory.createItemPotionHealth()
+STATE.inventorySlots[3].storedItem = ItemFactory.createItemPotionHealthSmall()
+STATE.inventorySlots[4].storedItem = ItemFactory.createItemPotionHealthSmall()
+STATE.inventorySlots[5].storedItem = ItemFactory.createItemPotionHealthSmall()
+STATE.inventorySlots[INVENTORY_CONFIG.COLS * 1 + 0].storedItem = ItemFactory.createItemPotionManaLarge()
+STATE.inventorySlots[INVENTORY_CONFIG.COLS * 1 + 1].storedItem = ItemFactory.createItemPotionMana()
+STATE.inventorySlots[INVENTORY_CONFIG.COLS * 1 + 2].storedItem = ItemFactory.createItemPotionMana()
+STATE.inventorySlots[INVENTORY_CONFIG.COLS * 2 + 0].storedItem = ItemFactory.createItemPotionRejuvenationLarge()
+STATE.inventorySlots[INVENTORY_CONFIG.COLS * 2 + 1].storedItem = ItemFactory.createItemPotionRejuvenation()
+STATE.inventorySlots[INVENTORY_CONFIG.COLS * 3 + 0].storedItem = ItemFactory.createItemPotionStaminaLarge()
+STATE.inventorySlots[INVENTORY_CONFIG.COLS * 3 + 1].storedItem = ItemFactory.createItemPotionStamina()
+STATE.inventorySlots[INVENTORY_CONFIG.COLS * 4 + 0].storedItem = ItemFactory.createItemPotionAntidoteLarge()
+STATE.inventorySlots[INVENTORY_CONFIG.COLS * 4 + 1].storedItem = ItemFactory.createItemPotionAntidote()
+STATE.inventorySlots[INVENTORY_CONFIG.COLS * 4 + 2].storedItem = ItemFactory.createItemPotionAntidoteSmall()
+STATE.inventorySlots[INVENTORY_CONFIG.COLS * 4 + 2].storedItem = ItemFactory.createItemPotionAntidoteSmall()
+STATE.inventorySlots[INVENTORY_CONFIG.COLS * 5 + 0].storedItem = ItemFactory.createItemPotionUnknown1()
+STATE.inventorySlots[INVENTORY_CONFIG.COLS * 5 + 1].storedItem = ItemFactory.createItemPotionUnknown2()
 
 function setup() {
   setupEventListeners()

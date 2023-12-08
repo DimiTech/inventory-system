@@ -1,28 +1,33 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>2D Game Engine</title>
-  <style>
-    canvas {
-      margin: auto;
-      padding: 0;
-      display: block;
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;     
-      border: 1px solid #444;
-      image-rendering: -moz-crisp-edges;
-      image-rendering: -webkit-crisp-edges;
-      image-rendering: pixelated;
-      image-rendering: crisp-edges;
-    }
-  </style>
-  <script defer type="module" src="./src/main.js"></script>
-</head>
-<body>
-  <canvas id="canvas"></canvas>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>2D Game Engine</title>
+    <style>
+      canvas {
+        margin: auto;
+        padding: 0;
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border: 1px solid #444;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: -webkit-crisp-edges;
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+      p {
+        text-align: center;
+      }
+    </style>
+    <script defer type="module" src="./src/main.js"></script>
+  </head>
+  <body>
+    <p>Press 'i' to toggle the Inventory</p>
+    <p>Drag & Drop items by holding the Left Click</p>
+    <canvas id="canvas"></canvas>
+  </body>
 </html>

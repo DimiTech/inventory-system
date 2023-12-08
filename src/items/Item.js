@@ -55,20 +55,103 @@ const potionSpriteSegment = {
 }
 
 const ItemFactory = {
-  createItemHealthPotion() {
-    const itemBase = createItem()
+  createItemPotionHealthSmall() {
     return {
-      ...itemBase,
+      ...createItem(),
+      spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 11,
+      spriteY: potionSpriteSegment.y,
+    }
+  },
+  createItemPotionHealth() {
+    return {
+      ...createItem(),
       spriteX: potionSpriteSegment.x,
       spriteY: potionSpriteSegment.y,
     }
   },
-
-  createItemHealthPotionLarge() {
-    const itemBase = createItem()
+  createItemPotionHealthLarge() {
     return {
-      ...itemBase,
-      spriteX: potionSpriteSegment.x + potionSpriteSegment.gapX + SLOT_SIZE,
+      ...createItem(),
+      spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 1,
+      spriteY: potionSpriteSegment.y,
+    }
+  },
+
+  createItemPotionMana() {
+    return {
+      ...createItem(),
+      spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 2,
+      spriteY: potionSpriteSegment.y,
+    }
+  },
+  createItemPotionManaLarge() {
+    return {
+      ...createItem(),
+      spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 3,
+      spriteY: potionSpriteSegment.y,
+    }
+  },
+
+  createItemPotionRejuvenation() {
+    return {
+      ...createItem(),
+      spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 4,
+      spriteY: potionSpriteSegment.y,
+    }
+  },
+  createItemPotionRejuvenationLarge() {
+    return {
+      ...createItem(),
+      spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 5,
+      spriteY: potionSpriteSegment.y,
+    }
+  },
+  createItemPotionStamina() {
+    return {
+      ...createItem(),
+      spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 6,
+      spriteY: potionSpriteSegment.y,
+    }
+  },
+  createItemPotionStaminaLarge() {
+    return {
+      ...createItem(),
+      spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 7,
+      spriteY: potionSpriteSegment.y,
+    }
+  },
+  createItemPotionAntidoteSmall() {
+    return {
+      ...createItem(),
+      spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 8,
+      spriteY: potionSpriteSegment.y,
+    }
+  },
+  createItemPotionAntidote() {
+    return {
+      ...createItem(),
+      spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 9,
+      spriteY: potionSpriteSegment.y,
+    }
+  },
+  createItemPotionAntidoteLarge() {
+    return {
+      ...createItem(),
+      spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 10,
+      spriteY: potionSpriteSegment.y,
+    }
+  },
+  createItemPotionUnknown1() {
+    return {
+      ...createItem(),
+      spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 12,
+      spriteY: potionSpriteSegment.y,
+    }
+  },
+  createItemPotionUnknown2() {
+    return {
+      ...createItem(),
+      spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 13,
       spriteY: potionSpriteSegment.y,
     }
   },
