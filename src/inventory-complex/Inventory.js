@@ -74,42 +74,42 @@ function findEnoughSlotsForItem(item) {
     if (slot.storedItem) {
       return false
     }
-    if (item.sizeCols > 1) {
-      let currentSlot
-      for (let relativeCol = 0; relativeCol < item.sizeCols - 1; ++relativeCol) {
-        currentSlot = STATE.inventorySlots[slot.col + slot.row * INVENTORY_CONFIG.COLS + relativeCol]
 
-        if (!currentSlot) {
+    // Bigger items require more calculation
+    if (item.sizeCols > 1 || item.sizeRows > 1) {
+      let currentSlot = STATE.inventorySlots[slot.col + slot.row * INVENTORY_CONFIG.COLS]
+
+      for (let relativeCol = 0; relativeCol < item.sizeCols; ++relativeCol) {
+        if (!currentSlot || currentSlot.storedItem) {
           return false
         }
 
-        const slotToTheRight = getSlotToTheRight(currentSlot)
-        if (!slotToTheRight || slotToTheRight.storedItem) {
+        if (slotsBelowAreTaken(currentSlot, item)) {
           return false
         }
+
+        currentSlot = getSlotToTheRight(currentSlot)
       }
     }
-    // TODO: Handle overflow (when placing big items at the bottom)
 
-    // TODO: Handle diagonal occupation bug
-    // Right now you can place a 2x3 item in slots where the [1, 2] slot is taken!
-    if (item.sizeRows > 1) {
-      let currentSlot
-      for (let relativeRow = 0; relativeRow < item.sizeRows - 1; ++relativeRow) {
-        currentSlot = STATE.inventorySlots[slot.col + (slot.row + relativeRow) * INVENTORY_CONFIG.COLS]
-
-        if (!currentSlot) {
-          return false
-        }
-
-        const slotToTheBottom = getSlotToTheBottom(currentSlot)
-        if (!slotToTheBottom || slotToTheBottom.storedItem) {
-          return false
-        }
-      }
-    }
     return true
   })
+}
+
+function slotsBelowAreTaken(slot, item) {
+  let currentSlot
+  for (let relativeRow = 0; relativeRow < item.sizeRows - 1; ++relativeRow) {
+    currentSlot = STATE.inventorySlots[slot.col + (slot.row + relativeRow) * INVENTORY_CONFIG.COLS]
+
+    if (!currentSlot) {
+      return true
+    }
+
+    const slotToTheBottom = getSlotToTheBottom(currentSlot)
+    if (!slotToTheBottom || slotToTheBottom.storedItem) {
+      return true
+    }
+  }
 }
 
 function getSlotToTheRight(slot) {
