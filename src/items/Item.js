@@ -29,17 +29,33 @@ function renderInInventory(x, y) {
   const canvasX = x
   const canvasY = y
 
-  context.drawImage(
-    healthPotionSprite,
-    this.spriteX, // Sprite start coordinates
-    this.spriteY,
-    this.width, // Sprite crop dimensions
-    this.height,
-    canvasX, // Canvas destination
-    canvasY,
-    this.width, // Sprite crop dimensions
-    this.height,
-  )
+  if (this.dragged) {
+    context.globalAlpha = 0.7
+    context.drawImage(
+      healthPotionSprite,
+      this.spriteX, // Sprite start coordinates
+      this.spriteY,
+      this.width, // Sprite crop dimensions
+      this.height,
+      this.dragged && this.sizeCols > 1 ? canvasX - ((this.sizeCols - 1) * SLOT_SIZE) / 2 : canvasX, // Canvas destination
+      this.dragged && this.sizeRows > 1 ? canvasY - ((this.sizeRows - 1) * SLOT_SIZE) / 2 : canvasY,
+      this.width, // Sprite crop dimensions
+      this.height,
+    )
+    context.globalAlpha = 1
+  } else {
+    context.drawImage(
+      healthPotionSprite,
+      this.spriteX, // Sprite start coordinates
+      this.spriteY,
+      this.width, // Sprite crop dimensions
+      this.height,
+      canvasX, // Canvas destination
+      canvasY,
+      this.width, // Sprite crop dimensions
+      this.height,
+    )
+  }
 }
 
 function renderInWorld() {

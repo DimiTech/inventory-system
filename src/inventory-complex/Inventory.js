@@ -345,7 +345,7 @@ function handleMouseUp(e) {
         return cleanDraggingState()
       }
     } else if (CONFIG.INVENTORY.ITEM_SWAPPING_ENABLED) {
-      const targetSlot = targetInventorySlot || targetInventorySlot.masterSlot
+      const targetSlot = targetInventorySlot.masterSlot || targetInventorySlot
       const targetItem = targetSlot.storedItem || targetSlot.masterSlot.storedItem
 
       // If we're actually dropping an Item on one of its own slots
