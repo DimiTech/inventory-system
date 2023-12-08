@@ -133,7 +133,6 @@ function spaceAroundSlotIsOccupied(slot, item) {
       }
 
       currentSlot = STATE.inventorySlots[startCol + col + (startRow + row) * INVENTORY_CONFIG.COLS]
-      console.log('>>>>>>>> currentSlot:', currentSlot)
       if (!currentSlot || currentSlot.occupied) {
         return true
       }
@@ -142,7 +141,31 @@ function spaceAroundSlotIsOccupied(slot, item) {
   return false
 }
 
-function spaceAroundSlotIsOccupiedByItemsOtherThanThisOne(slot, item) {
+function spaceAroundSlotIsOnlyOccupiedByAllowedItem(targetSlot, allowedItem) {
+  const startCol = targetSlot.col
+  const startRow = targetSlot.row
+  let currentSlot
+  for (let col = 0; col < allowedItem.sizeCols; ++col) {
+    for (let row = 0; row < allowedItem.sizeRows; ++row) {
+      if (col >= INVENTORY_CONFIG.COLS - 1 && row >= INVENTORY_CONFIG.ROWS - 1) {
+        return false
+      }
+
+      currentSlot = STATE.inventorySlots[startCol + col + (startRow + row) * INVENTORY_CONFIG.COLS]
+      if (!currentSlot) {
+        return false
+      }
+      if (currentSlot.storedItem === allowedItem || currentSlot.masterSlot?.storedItem === allowedItem) {
+        continue
+      } else if (currentSlot.occupied) {
+        return false
+      }
+    }
+  }
+  return true
+}
+
+function spaceAroundSlotIsOccupiedByItemsOtherThanTheOneAtTheSlot(slot, item) {
   const startCol = slot.col
   const startRow = slot.row
   let currentSlot
@@ -360,13 +383,14 @@ function handleMouseUp(e) {
       return
     }
     if (targetInventorySlot.storedItem === null && targetInventorySlot.occupied === false) {
-      console.log('>> XHere 1')
-      console.log({ targetInventorySlot })
-      if (STATE.draggedItem && !spaceAroundSlotIsOccupied(targetInventorySlot, STATE.draggedItem)) {
-        console.log('  >> XHere 2')
+      if (
+        STATE.draggedItem &&
+        (!spaceAroundSlotIsOccupied(targetInventorySlot, STATE.draggedItem) ||
+          spaceAroundSlotIsOnlyOccupiedByAllowedItem(targetInventorySlot, STATE.draggedItem))
+      ) {
         targetInventorySlot.storedItem = STATE.draggedItem
-        occupySpaceAroundSlot(targetInventorySlot, targetInventorySlot.storedItem)
         releaseSpaceAroundSlot(STATE.draggedInventorySlot, STATE.draggedItem)
+        occupySpaceAroundSlot(targetInventorySlot, targetInventorySlot.storedItem)
         return cleanDraggingState()
       }
     } else if (CONFIG.INVENTORY.ITEM_SWAPPING_ENABLED) {
@@ -378,7 +402,7 @@ function handleMouseUp(e) {
       // If we're actually dropping an Item on one of its own slots
       if (
         targetSlotMasterItem === STATE.draggedItem &&
-        !spaceAroundSlotIsOccupiedByItemsOtherThanThisOne(targetSlotMaster, STATE.draggedItem)
+        !spaceAroundSlotIsOccupiedByItemsOtherThanTheOneAtTheSlot(targetSlotMaster, STATE.draggedItem)
       ) {
         if (
           // This if guard prevents the item from going out of bounds:
@@ -396,8 +420,8 @@ function handleMouseUp(e) {
 
       if (
         STATE.draggedItem &&
-        !spaceAroundSlotIsOccupiedByItemsOtherThanThisOne(targetSlot, STATE.draggedItem) &&
-        !spaceAroundSlotIsOccupiedByItemsOtherThanThisOne(
+        !spaceAroundSlotIsOccupiedByItemsOtherThanTheOneAtTheSlot(targetSlot, STATE.draggedItem) &&
+        !spaceAroundSlotIsOccupiedByItemsOtherThanTheOneAtTheSlot(
           STATE.draggedInventorySlot,
           targetItem || targetSlotMasterItem,
         )
@@ -428,9 +452,6 @@ function handleMouseUp(e) {
     }
 
     cleanDraggingState()
-    // console.log('STATE.draggedInventorySlot.storedItem:', STATE.draggedInventorySlot.storedItem)
-
-    DEBUG_inventoryPrettyPrint()
   }
 
   // Basically a function that serves as a GOTO >:D
