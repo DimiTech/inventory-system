@@ -133,6 +133,7 @@ function spaceAroundSlotIsOccupied(slot, item) {
       }
 
       currentSlot = STATE.inventorySlots[startCol + col + (startRow + row) * INVENTORY_CONFIG.COLS]
+      console.log('>>>>>>>> currentSlot:', currentSlot)
       if (!currentSlot || currentSlot.occupied) {
         return true
       }
@@ -141,7 +142,7 @@ function spaceAroundSlotIsOccupied(slot, item) {
   return false
 }
 
-function spaceAroundSlotIsOccupiedWithItemsOtherThanThisOne(slot, item) {
+function spaceAroundSlotIsOccupiedByItemsOtherThanThisOne(slot, item) {
   const startCol = slot.col
   const startRow = slot.row
   let currentSlot
@@ -359,7 +360,10 @@ function handleMouseUp(e) {
       return
     }
     if (targetInventorySlot.storedItem === null && targetInventorySlot.occupied === false) {
+      console.log('>> XHere 1')
+      console.log({ targetInventorySlot })
       if (STATE.draggedItem && !spaceAroundSlotIsOccupied(targetInventorySlot, STATE.draggedItem)) {
+        console.log('  >> XHere 2')
         targetInventorySlot.storedItem = STATE.draggedItem
         occupySpaceAroundSlot(targetInventorySlot, targetInventorySlot.storedItem)
         releaseSpaceAroundSlot(STATE.draggedInventorySlot, STATE.draggedItem)
@@ -374,36 +378,36 @@ function handleMouseUp(e) {
       // If we're actually dropping an Item on one of its own slots
       if (
         targetSlotMasterItem === STATE.draggedItem &&
-        !spaceAroundSlotIsOccupiedWithItemsOtherThanThisOne(targetSlotMaster, STATE.draggedItem)
+        !spaceAroundSlotIsOccupiedByItemsOtherThanThisOne(targetSlotMaster, STATE.draggedItem)
       ) {
-        releaseSpaceAroundSlot(STATE.draggedInventorySlot, STATE.draggedItem)
-        targetSlot.storedItem = targetSlotMasterItem
-        occupySpaceAroundSlot(targetSlot, targetSlot.storedItem)
-        return cleanDraggingState()
+        if (
+          // This if guard prevents the item from going out of bounds:
+          targetSlot.row + STATE.draggedItem.sizeRows <= INVENTORY_CONFIG.ROWS &&
+          targetSlot.col + STATE.draggedItem.sizeCols <= INVENTORY_CONFIG.COLS
+        ) {
+          releaseSpaceAroundSlot(STATE.draggedInventorySlot, STATE.draggedItem)
+          targetSlot.storedItem = targetSlotMasterItem
+          occupySpaceAroundSlot(targetSlot, targetSlot.storedItem)
+          return cleanDraggingState()
+        } else {
+          return cleanDraggingState()
+        }
       }
 
       if (
         STATE.draggedItem &&
-        !spaceAroundSlotIsOccupiedWithItemsOtherThanThisOne(targetSlot, STATE.draggedItem) &&
-        !spaceAroundSlotIsOccupiedWithItemsOtherThanThisOne(
+        !spaceAroundSlotIsOccupiedByItemsOtherThanThisOne(targetSlot, STATE.draggedItem) &&
+        !spaceAroundSlotIsOccupiedByItemsOtherThanThisOne(
           STATE.draggedInventorySlot,
           targetItem || targetSlotMasterItem,
         )
       ) {
-        console.log('entered 1')
-        console.log({ targetSlot })
-        console.log({ targetSlotMaster })
-        console.log({ targetItem })
-        console.log({ targetSlotMasterItem })
-
         if (targetSlot && targetItem) {
           releaseSpaceAroundSlot(targetSlot, targetItem)
         }
         if (targetSlotMaster) {
           releaseSpaceAroundSlot(targetSlotMaster, targetItem || targetSlotMasterItem)
         }
-
-        // console.log(' entered 2')
 
         releaseSpaceAroundSlot(STATE.draggedInventorySlot, STATE.draggedInventorySlot.storedItem)
         if (STATE.draggedInventorySlot.masterSlot) {
@@ -413,30 +417,13 @@ function handleMouseUp(e) {
           )
         }
 
-        // console.log('  entered 3')
-
         targetSlot.storedItem = STATE.draggedItem
 
-        // console.log('   entered 4')
-
-        console.log('Item 1:', targetSlot.storedItem)
         occupySpaceAroundSlot(targetSlot, targetSlot.storedItem)
-
-        // console.log('    entered 5')
-
-        // console.log({ targetItem })
-        // console.log({ targetSlotMasterItem })
 
         STATE.draggedInventorySlot.storedItem = targetItem || targetSlotMasterItem
 
-        console.log('Item 2:', STATE.draggedInventorySlot.storedItem)
-
-        // console.log('     entered 6')
-        // console.log('draggedItem:', STATE.draggedInventorySlot.storedItem)
-        // console.log('draggedItem 2:', STATE.draggedItem)
-
         occupySpaceAroundSlot(STATE.draggedInventorySlot, targetItem || targetSlotMasterItem)
-        // console.log('      entered 7')
       }
     }
 

@@ -8,7 +8,8 @@ const INVENTORY_SLOT_CONFIG = {
   STROKE_STYLE: 'rgba(0, 0, 0, 0.5)',
   COLORS: {
     BLUE: 'rgba(180, 180, 220, 0.5)',
-    RED: 'rgba(220, 180, 180, 0.5)',
+    RED: 'rgba(220, 180, 180, 0.8)',
+    DARK_RED: 'rgba(50, 50, 255, 0.6)',
   },
 }
 
@@ -52,7 +53,7 @@ function render(SLOT_SIZE) {
   context.lineWidth = lineWidth
   context.strokeStyle = INVENTORY_SLOT_CONFIG.STROKE_STYLE
   if (this.occupied) {
-    context.strokeStyle = 'red'
+    context.strokeStyle = INVENTORY_SLOT_CONFIG.COLORS.DARK_RED
   }
 
   let outlineX = x - lineWidth / 2
