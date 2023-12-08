@@ -128,6 +128,10 @@ function spaceAroundSlotIsOccupied(slot, item) {
       if (col === 0 && row === 0) {
         continue
       }
+
+      if (startCol + col >= INVENTORY_CONFIG.COLS) {
+        return true
+      }
       if (col >= INVENTORY_CONFIG.COLS - 1 && row >= INVENTORY_CONFIG.ROWS - 1) {
         return true
       }
@@ -148,6 +152,10 @@ function spaceAroundSlotIsOnlyOccupiedByAllowedItem(targetSlot, allowedItem) {
   for (let col = 0; col < allowedItem.sizeCols; ++col) {
     for (let row = 0; row < allowedItem.sizeRows; ++row) {
       if (col >= INVENTORY_CONFIG.COLS - 1 && row >= INVENTORY_CONFIG.ROWS - 1) {
+        return false
+      }
+
+      if (startCol + col >= INVENTORY_CONFIG.COLS) {
         return false
       }
 
