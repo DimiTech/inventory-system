@@ -76,8 +76,8 @@ player.collidesWithItem = function () {
         {
           x: i.x,
           y: i.y,
-          width: SLOT_SIZE,
-          height: SLOT_SIZE,
+          width: SLOT_SIZE * i.sizeCols,
+          height: SLOT_SIZE * i.sizeRows,
         },
       )
     )
