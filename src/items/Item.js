@@ -18,7 +18,7 @@ function loadSprite(spriteURL) {
 
 const healthPotionSprite = await loadSprite(itemSpriteSheetURLS.healthPotion)
 
-function render(x, y) {
+function renderInInventory(x, y) {
   if ((!healthPotionSprite) instanceof Image) {
     return
   }
@@ -39,12 +39,32 @@ function render(x, y) {
   )
 }
 
-function createItem() {
+function renderInWorld() {
+  if (this.storedInInventory === false && this.x && this.y) {
+    context.drawImage(
+      healthPotionSprite,
+      this.spriteX, // Sprite start coordinates
+      this.spriteY,
+      SLOT_SIZE, // Sprite crop dimensions
+      SLOT_SIZE,
+      this.x,
+      this.y,
+      SLOT_SIZE,
+      SLOT_SIZE,
+    )
+  }
+}
+
+function createItem(x, y) {
   return {
+    x,
+    y,
     sizeCols: 1,
     sizeRows: 1,
     dragged: false,
-    render,
+    storedInInventory: false,
+    renderInInventory,
+    renderInWorld,
   }
 }
 
@@ -55,102 +75,102 @@ const potionSpriteSegment = {
 }
 
 const ItemFactory = {
-  createItemPotionHealthSmall() {
+  createItemPotionHealthSmall(x, y) {
     return {
-      ...createItem(),
+      ...createItem(x, y),
       spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 11,
       spriteY: potionSpriteSegment.y,
     }
   },
-  createItemPotionHealth() {
+  createItemPotionHealth(x, y) {
     return {
-      ...createItem(),
+      ...createItem(x, y),
       spriteX: potionSpriteSegment.x,
       spriteY: potionSpriteSegment.y,
     }
   },
-  createItemPotionHealthLarge() {
+  createItemPotionHealthLarge(x, y) {
     return {
-      ...createItem(),
+      ...createItem(x, y),
       spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 1,
       spriteY: potionSpriteSegment.y,
     }
   },
 
-  createItemPotionMana() {
+  createItemPotionMana(x, y) {
     return {
-      ...createItem(),
+      ...createItem(x, y),
       spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 2,
       spriteY: potionSpriteSegment.y,
     }
   },
-  createItemPotionManaLarge() {
+  createItemPotionManaLarge(x, y) {
     return {
-      ...createItem(),
+      ...createItem(x, y),
       spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 3,
       spriteY: potionSpriteSegment.y,
     }
   },
 
-  createItemPotionRejuvenation() {
+  createItemPotionRejuvenation(x, y) {
     return {
-      ...createItem(),
+      ...createItem(x, y),
       spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 4,
       spriteY: potionSpriteSegment.y,
     }
   },
-  createItemPotionRejuvenationLarge() {
+  createItemPotionRejuvenationLarge(x, y) {
     return {
-      ...createItem(),
+      ...createItem(x, y),
       spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 5,
       spriteY: potionSpriteSegment.y,
     }
   },
-  createItemPotionStamina() {
+  createItemPotionStamina(x, y) {
     return {
-      ...createItem(),
+      ...createItem(x, y),
       spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 6,
       spriteY: potionSpriteSegment.y,
     }
   },
-  createItemPotionStaminaLarge() {
+  createItemPotionStaminaLarge(x, y) {
     return {
-      ...createItem(),
+      ...createItem(x, y),
       spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 7,
       spriteY: potionSpriteSegment.y,
     }
   },
-  createItemPotionAntidoteSmall() {
+  createItemPotionAntidoteSmall(x, y) {
     return {
-      ...createItem(),
+      ...createItem(x, y),
       spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 8,
       spriteY: potionSpriteSegment.y,
     }
   },
-  createItemPotionAntidote() {
+  createItemPotionAntidote(x, y) {
     return {
-      ...createItem(),
+      ...createItem(x, y),
       spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 9,
       spriteY: potionSpriteSegment.y,
     }
   },
-  createItemPotionAntidoteLarge() {
+  createItemPotionAntidoteLarge(x, y) {
     return {
-      ...createItem(),
+      ...createItem(x, y),
       spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 10,
       spriteY: potionSpriteSegment.y,
     }
   },
-  createItemPotionUnknown1() {
+  createItemPotionUnknown1(x, y) {
     return {
-      ...createItem(),
+      ...createItem(x, y),
       spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 12,
       spriteY: potionSpriteSegment.y,
     }
   },
-  createItemPotionUnknown2() {
+  createItemPotionUnknown2(x, y) {
     return {
-      ...createItem(),
+      ...createItem(x, y),
       spriteX: potionSpriteSegment.x + (potionSpriteSegment.gapX + SLOT_SIZE) * 13,
       spriteY: potionSpriteSegment.y,
     }

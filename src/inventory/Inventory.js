@@ -1,7 +1,6 @@
 import CONFIG from '../Config.js'
 
 import inventorySlots from './InventorySlots.js'
-import { ItemFactory } from '../items/Item.js'
 
 const { SCALE } = CONFIG
 
@@ -52,26 +51,18 @@ for (let row = 0; row < INVENTORY_CONFIG.ROWS; ++row) {
   }
 }
 
-// TODO: Temporary item initialization
-STATE.inventorySlots[0].storedItem = ItemFactory.createItemPotionHealthLarge()
-STATE.inventorySlots[1].storedItem = ItemFactory.createItemPotionHealth()
-STATE.inventorySlots[2].storedItem = ItemFactory.createItemPotionHealth()
-STATE.inventorySlots[3].storedItem = ItemFactory.createItemPotionHealthSmall()
-STATE.inventorySlots[4].storedItem = ItemFactory.createItemPotionHealthSmall()
-STATE.inventorySlots[5].storedItem = ItemFactory.createItemPotionHealthSmall()
-STATE.inventorySlots[INVENTORY_CONFIG.COLS * 1 + 0].storedItem = ItemFactory.createItemPotionManaLarge()
-STATE.inventorySlots[INVENTORY_CONFIG.COLS * 1 + 1].storedItem = ItemFactory.createItemPotionMana()
-STATE.inventorySlots[INVENTORY_CONFIG.COLS * 1 + 2].storedItem = ItemFactory.createItemPotionMana()
-STATE.inventorySlots[INVENTORY_CONFIG.COLS * 2 + 0].storedItem = ItemFactory.createItemPotionRejuvenationLarge()
-STATE.inventorySlots[INVENTORY_CONFIG.COLS * 2 + 1].storedItem = ItemFactory.createItemPotionRejuvenation()
-STATE.inventorySlots[INVENTORY_CONFIG.COLS * 3 + 0].storedItem = ItemFactory.createItemPotionStaminaLarge()
-STATE.inventorySlots[INVENTORY_CONFIG.COLS * 3 + 1].storedItem = ItemFactory.createItemPotionStamina()
-STATE.inventorySlots[INVENTORY_CONFIG.COLS * 4 + 0].storedItem = ItemFactory.createItemPotionAntidoteLarge()
-STATE.inventorySlots[INVENTORY_CONFIG.COLS * 4 + 1].storedItem = ItemFactory.createItemPotionAntidote()
-STATE.inventorySlots[INVENTORY_CONFIG.COLS * 4 + 2].storedItem = ItemFactory.createItemPotionAntidoteSmall()
-STATE.inventorySlots[INVENTORY_CONFIG.COLS * 4 + 2].storedItem = ItemFactory.createItemPotionAntidoteSmall()
-STATE.inventorySlots[INVENTORY_CONFIG.COLS * 5 + 0].storedItem = ItemFactory.createItemPotionUnknown1()
-STATE.inventorySlots[INVENTORY_CONFIG.COLS * 5 + 1].storedItem = ItemFactory.createItemPotionUnknown2()
+function addItem(item) {
+  const firstEmptySlot = STATE.inventorySlots.find(slot => !slot.storedItem)
+  if (!firstEmptySlot) {
+    console.log('Inventory Full!')
+    return
+  }
+
+  item.storedInInventory = true
+  item.x = null
+  item.y = null
+  firstEmptySlot.storedItem = item
+}
 
 function setup() {
   setupEventListeners()
@@ -228,9 +219,9 @@ function render() {
       y = STATE.draggingCoordinates.y - INVENTORY_CONFIG.HALF_SLOT_SIZE
     }
     if (STATE.draggedItem && STATE.draggedItem === inventorySlot.storedItem) {
-      draggedItemRenderFunction = () => inventorySlot.storedItem.render(x, y)
+      draggedItemRenderFunction = () => inventorySlot.storedItem.renderInInventory(x, y)
     } else {
-      inventorySlot.storedItem.render(x, y)
+      inventorySlot.storedItem.renderInInventory(x, y)
     }
   }
   draggedItemRenderFunction && draggedItemRenderFunction()
@@ -241,4 +232,5 @@ export default {
   setup,
   update,
   render,
+  addItem,
 }
