@@ -84,7 +84,7 @@ function findEnoughSlotsForItem(item) {
           return false
         }
 
-        if (slotsBelowAreTaken(currentSlot, item)) {
+        if (slotsBelowAreTaken(currentSlot.col, currentSlot.row, item.sizeRows - 1)) {
           return false
         }
 
@@ -96,10 +96,10 @@ function findEnoughSlotsForItem(item) {
   })
 }
 
-function slotsBelowAreTaken(slot, item) {
+function slotsBelowAreTaken(col, row, numberOfSlotsToCheck) {
   let currentSlot
-  for (let relativeRow = 0; relativeRow < item.sizeRows - 1; ++relativeRow) {
-    currentSlot = STATE.inventorySlots[slot.col + (slot.row + relativeRow) * INVENTORY_CONFIG.COLS]
+  for (let relativeRow = 0; relativeRow < numberOfSlotsToCheck; ++relativeRow) {
+    currentSlot = STATE.inventorySlots[col + (row + relativeRow) * INVENTORY_CONFIG.COLS]
 
     if (!currentSlot) {
       return true
