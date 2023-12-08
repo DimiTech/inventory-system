@@ -263,7 +263,13 @@ function handleMouseDown(e) {
 
   if (isWithinInventory(x, y)) {
     STATE.draggedInventorySlot = findInventorySlotAtCoordinates(x, y)
+
     STATE.draggedItem = STATE.draggedInventorySlot.storedItem || null
+    if (STATE.draggedInventorySlot.storedItem === null && STATE.draggedInventorySlot.occupied === true) {
+      STATE.draggedInventorySlot = STATE.draggedInventorySlot.masterSlot
+      STATE.draggedItem = STATE.draggedInventorySlot.masterSlot.storedItem
+    }
+
     if (STATE.draggedItem) {
       STATE.draggedItem.dragged = true
     }
