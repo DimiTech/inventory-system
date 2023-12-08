@@ -396,11 +396,22 @@ function handleMouseUp(e) {
         console.log({ targetItem })
         console.log({ targetSlotMasterItem })
 
-        releaseSpaceAroundSlot(targetSlot || targetSlotMaster, targetItem || targetSlotMasterItem)
+        if (targetSlot && targetItem) {
+          releaseSpaceAroundSlot(targetSlot, targetItem)
+        }
+        if (targetSlotMaster) {
+          releaseSpaceAroundSlot(targetSlotMaster, targetItem || targetSlotMasterItem)
+        }
 
         // console.log(' entered 2')
 
         releaseSpaceAroundSlot(STATE.draggedInventorySlot, STATE.draggedInventorySlot.storedItem)
+        if (STATE.draggedInventorySlot.masterSlot) {
+          releaseSpaceAroundSlot(
+            STATE.draggedInventorySlot.masterSlot,
+            STATE.draggedInventorySlot.masterSlot.storedItem,
+          )
+        }
 
         // console.log('  entered 3')
 
