@@ -138,7 +138,7 @@ const itemFactories = [
   ItemFactory.createItemPotionUnknown2,
 ]
 
-for (let i = 0; i < 10; ++i) {
+for (let i = 0; i < 5 + Math.ceil(Math.random() * 40); ++i) {
   const randomFactoryIndex = Math.floor(Math.random() * itemFactories.length)
   items.push(itemFactories[randomFactoryIndex](generateItemPositionX(), generateItemPositionY()))
 }
