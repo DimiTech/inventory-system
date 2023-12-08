@@ -360,7 +360,26 @@ function handleMouseHover(e) {
 
     if (isWithinInventory(x, y)) {
       const slotUnderCursor = findInventorySlotAtCoordinates(x, y)
-      slotUnderCursor && slotUnderCursor.highlight()
+      if (slotUnderCursor) {
+        highlightSlots(slotUnderCursor)
+      }
+    }
+
+    function highlightSlots(slotUnderCursor) {
+      if (STATE.draggedItem) {
+        for (let i = 0; i < STATE.draggedItem.sizeCols; ++i) {
+          for (let j = 0; j < STATE.draggedItem.sizeRows; ++j) {
+            if (slotUnderCursor.col + i >= INVENTORY_CONFIG.COLS) {
+              return
+            }
+            STATE.inventorySlots[
+              slotUnderCursor.col + i + (slotUnderCursor.row + j) * INVENTORY_CONFIG.COLS
+            ]?.highlight()
+          }
+        }
+      } else {
+        slotUnderCursor.highlight()
+      }
     }
   }
 }
