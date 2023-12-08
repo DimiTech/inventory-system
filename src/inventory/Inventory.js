@@ -1,5 +1,7 @@
 import CONFIG from '../Config.js'
 
+import { context } from '../Canvas.js'
+
 import inventorySlots from './InventorySlots.js'
 
 const { SCALE } = CONFIG
@@ -23,6 +25,13 @@ const totalGapOffsetY = (INVENTORY_CONFIG.ROWS * INVENTORY_CONFIG.SLOT_GAP) / 2
 INVENTORY_CONFIG.START = {
   X: canvas.width / 2 - (INVENTORY_CONFIG.SLOT_SIZE * INVENTORY_CONFIG.COLS) / 2 - totalGapOffsetX, // center X
   Y: canvas.height / 2 - (INVENTORY_CONFIG.SLOT_SIZE * INVENTORY_CONFIG.ROWS) / 2 - totalGapOffsetY, // center Y
+}
+INVENTORY_CONFIG.FRAME = {
+  COLOR: 'rgba(0, 0, 0, 0.5)',
+  X: INVENTORY_CONFIG.START.X - INVENTORY_CONFIG.HALF_GAP_SIZE,
+  Y: INVENTORY_CONFIG.START.Y - INVENTORY_CONFIG.HALF_GAP_SIZE,
+  WIDTH: INVENTORY_CONFIG.COLS * INVENTORY_CONFIG.SLOT_SIZE + INVENTORY_CONFIG.COLS * INVENTORY_CONFIG.SLOT_GAP,
+  HEIGHT: INVENTORY_CONFIG.ROWS * INVENTORY_CONFIG.SLOT_SIZE + INVENTORY_CONFIG.ROWS * INVENTORY_CONFIG.SLOT_GAP,
 }
 
 const STATE = {
@@ -64,6 +73,14 @@ function addItem(item) {
   firstEmptySlot.storedItem = item
 }
 
+function removeItem(item, worldX, worldY) {
+  const parentSlot = STATE.inventorySlots.find(slot => slot.storedItem === item)
+  parentSlot.storedItem = null
+  item.x = worldX
+  item.y = worldY
+  item.storedInInventory = false
+}
+
 function setup() {
   setupEventListeners()
 }
@@ -74,7 +91,7 @@ function setupEventListeners() {
   }
 
   document.addEventListener('keydown', e => {
-    if (e.key === 'i') {
+    if (e.key === 'i' || e.key === 'I') {
       STATE.inventoryOpen = !STATE.inventoryOpen
 
       if (STATE.inventoryOpen) {
@@ -155,6 +172,8 @@ function handleMouseUp(e) {
           STATE.draggedInventorySlot.storedItem = targetItem
         }
       }
+    } else if (STATE.draggedItem) {
+      removeItem(STATE.draggedItem, x - INVENTORY_CONFIG.HALF_SLOT_SIZE, y - INVENTORY_CONFIG.HALF_SLOT_SIZE)
     }
 
     STATE.inventorySlots.forEach(s => s.unhighlight())
@@ -203,6 +222,16 @@ function render() {
   if (!STATE.inventoryOpen) {
     return
   }
+
+  // Render Inventory
+
+  context.fillStyle = INVENTORY_CONFIG.FRAME.COLOR
+  context.fillRect(
+    INVENTORY_CONFIG.FRAME.X,
+    INVENTORY_CONFIG.FRAME.Y,
+    INVENTORY_CONFIG.FRAME.WIDTH,
+    INVENTORY_CONFIG.FRAME.HEIGHT,
+  )
 
   for (const inventorySlot of STATE.inventorySlots) {
     inventorySlot.render(INVENTORY_CONFIG.SLOT_SIZE)
