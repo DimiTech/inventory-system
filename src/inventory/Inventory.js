@@ -175,6 +175,9 @@ function handleMouseUp(e) {
 
     if (isWithinInventory(x, y)) {
       const targetInventorySlot = findInventorySlotAtCoordinates(x, y)
+      if (!targetInventorySlot) {
+        return
+      }
       if (targetInventorySlot.storedItem === null) {
         targetInventorySlot.storedItem = STATE.draggedItem
         STATE.draggedInventorySlot.storedItem = null
