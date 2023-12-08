@@ -7,7 +7,7 @@ import { setupEventListeners } from './Keyboard.js'
 
 import inventorySimple from './inventory/Inventory.js'
 import inventoryComplex from './inventory-complex/Inventory.js'
-import { ItemFactory } from './items/Item.js'
+import { PotionItemFactory } from './items/Item.js'
 
 const { SLOT_SIZE } = CONFIG.INVENTORY
 
@@ -126,20 +126,20 @@ function generateItemPositionY() {
   return y
 }
 const itemFactories = [
-  ItemFactory.createItemPotionHealthLarge,
-  ItemFactory.createItemPotionHealthSmall,
-  ItemFactory.createItemPotionHealth,
-  ItemFactory.createItemPotionManaLarge,
-  ItemFactory.createItemPotionMana,
-  ItemFactory.createItemPotionRejuvenationLarge,
-  ItemFactory.createItemPotionRejuvenation,
-  ItemFactory.createItemPotionStaminaLarge,
-  ItemFactory.createItemPotionStamina,
-  ItemFactory.createItemPotionAntidoteLarge,
-  ItemFactory.createItemPotionAntidote,
-  ItemFactory.createItemPotionAntidoteSmall,
-  ItemFactory.createItemPotionUnknown1,
-  ItemFactory.createItemPotionUnknown2,
+  PotionItemFactory.createHealthLarge,
+  PotionItemFactory.createHealthSmall,
+  PotionItemFactory.createHealth,
+  PotionItemFactory.createManaLarge,
+  PotionItemFactory.createMana,
+  PotionItemFactory.createRejuvenationLarge,
+  PotionItemFactory.createRejuvenation,
+  PotionItemFactory.createStaminaLarge,
+  PotionItemFactory.createStamina,
+  PotionItemFactory.createAntidoteLarge,
+  PotionItemFactory.createAntidote,
+  PotionItemFactory.createAntidoteSmall,
+  PotionItemFactory.createUnknown1,
+  PotionItemFactory.createUnknown2,
 ]
 
 for (let i = 0; i < 5 + Math.ceil(Math.random() * 40); ++i) {
