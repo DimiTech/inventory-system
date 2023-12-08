@@ -8,6 +8,12 @@
         background-color: #333;
         font-family: Monospace;
       }
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-flow: column;
+      }
       canvas {
         margin: auto;
         padding: 0;
@@ -23,15 +29,13 @@
         image-rendering: pixelated;
         image-rendering: crisp-edges;
       }
-      p {
-        text-align: center;
-      }
     </style>
     <script defer type="module" src="./src/main.js"></script>
   </head>
   <body>
     <p>Controls: 'wasd' to move & pick up Items,'i' to toggle the Inventory, 'r' to sort the Inventory.</p>
     <p>Drag & Drop items by holding the Left Click. Refresh the page to regenerate Items.</p>
+    <label> <input type="checkbox" id="complexInventory" /> Inventory with varying item sizes</label>
     <canvas id="canvas"></canvas>
   </body>
 </html>
