@@ -21,6 +21,7 @@ function create(col, row, x, y, color = INVENTORY_SLOT_CONFIG.COLORS.BLUE) {
     color,
     render,
     storedItem: null,
+    occupied: false,
     isHighlighted: false, // Just for optimization
     highlight() {
       if (this.isHighlighted) {
@@ -49,6 +50,9 @@ function render(SLOT_SIZE) {
   const lineWidth = 2
   context.lineWidth = lineWidth
   context.strokeStyle = INVENTORY_SLOT_CONFIG.STROKE_STYLE
+  if (this.occupied) {
+    context.strokeStyle = 'red'
+  }
 
   let outlineX = x - lineWidth / 2
   let outlineY = y - lineWidth / 2

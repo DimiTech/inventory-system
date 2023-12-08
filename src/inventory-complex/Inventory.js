@@ -66,12 +66,72 @@ function addItem(item) {
   item.storedInInventory = true
   item.x = null
   item.y = null
-  firstEmptySlot.storedItem = item
+
+  if (item.sizeCols === 1 && item.sizeRows === 1) {
+    firstEmptySlot.storedItem = item
+    firstEmptySlot.occupied = true
+  } else {
+    // Bigger items require more calculation
+    occupySpaceAroundSlot(firstEmptySlot, item)
+  }
+}
+
+function removeItem(item, worldX, worldY) {
+  const parentSlot = STATE.inventorySlots.find(slot => slot.storedItem === item)
+  releaseSpaceAroundSlot(parentSlot, item)
+  item.x = worldX
+  item.y = worldY
+  item.storedInInventory = false
+}
+
+function occupySpaceAroundSlot(slot, item) {
+  const startCol = slot.col
+  const startRow = slot.row
+  let currentSlot
+  for (let col = 0; col < item.sizeCols; ++col) {
+    for (let row = 0; row < item.sizeRows; ++row) {
+      currentSlot = STATE.inventorySlots[startCol + col + (startRow + row) * INVENTORY_CONFIG.COLS]
+      currentSlot.occupied = true
+    }
+  }
+  slot.storedItem = item
+}
+
+function spaceAroundSlotIsOccupied(slot, item) {
+  const startCol = slot.col
+  const startRow = slot.row
+  let currentSlot
+  for (let col = 0; col < item.sizeCols; ++col) {
+    for (let row = 0; row < item.sizeRows; ++row) {
+      if (col === 0 && row === 0) {
+        continue
+      }
+
+      currentSlot = STATE.inventorySlots[startCol + col + (startRow + row) * INVENTORY_CONFIG.COLS]
+      if (!currentSlot || currentSlot.occupied) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
+function releaseSpaceAroundSlot(slot, item) {
+  const startCol = slot.col
+  const startRow = slot.row
+  let currentSlot
+  for (let col = 0; col < item.sizeCols; ++col) {
+    for (let row = 0; row < item.sizeRows; ++row) {
+      currentSlot = STATE.inventorySlots[startCol + col + (startRow + row) * INVENTORY_CONFIG.COLS]
+      currentSlot.occupied = false
+    }
+  }
+  slot.storedItem = null
 }
 
 function findEnoughSlotsForItem(item) {
   return STATE.inventorySlots.find(slot => {
-    if (slot.storedItem) {
+    if (slot.occupied) {
       return false
     }
 
@@ -80,7 +140,7 @@ function findEnoughSlotsForItem(item) {
       let currentSlot = STATE.inventorySlots[slot.col + slot.row * INVENTORY_CONFIG.COLS]
 
       for (let relativeCol = 0; relativeCol < item.sizeCols; ++relativeCol) {
-        if (!currentSlot || currentSlot.storedItem) {
+        if (!currentSlot || currentSlot.occupied) {
           return false
         }
 
@@ -106,7 +166,7 @@ function slotsBelowAreTaken(col, row, numberOfSlotsToCheck) {
     }
 
     const slotToTheBottom = getSlotToTheBottom(currentSlot)
-    if (!slotToTheBottom || slotToTheBottom.storedItem) {
+    if (!slotToTheBottom || slotToTheBottom.occupied) {
       return true
     }
   }
@@ -128,14 +188,6 @@ function getSlotToTheBottom(slot) {
   }
 
   return STATE.inventorySlots[slot.col + nextRow * INVENTORY_CONFIG.COLS]
-}
-
-function removeItem(item, worldX, worldY) {
-  const parentSlot = STATE.inventorySlots.find(slot => slot.storedItem === item)
-  parentSlot.storedItem = null
-  item.x = worldX
-  item.y = worldY
-  item.storedInInventory = false
 }
 
 function setup() {
@@ -161,14 +213,22 @@ function setupEventListeners() {
     if (e.key === 'r' || e.key === 'R') {
       // Sort Items (in a very basic way)
       STATE.inventorySlots
+        .map(slot => {
+          slot.occupied = false
+          return slot
+        })
         .filter(slot => slot.storedItem)
         .map(slot => {
           const item = slot.storedItem
           slot.storedItem = null
           return item
         })
+        // Sort by item size
+        .sort((itemA, itemB) => itemB.sizeCols * itemB.sizeRows - itemA.sizeCols * itemA.sizeRows)
         .forEach((item, index) => {
-          STATE.inventorySlots[index].storedItem = item
+          const slot = findEnoughSlotsForItem(item)
+          slot.storedItem = item
+          occupySpaceAroundSlot(slot, item)
         })
     }
   })
@@ -235,15 +295,28 @@ function handleMouseUp(e) {
       if (!targetInventorySlot) {
         return
       }
-      if (targetInventorySlot.storedItem === null) {
+      if (
+        targetInventorySlot.storedItem === null &&
+        targetInventorySlot.occupied === false &&
+        !spaceAroundSlotIsOccupied(targetInventorySlot, STATE.draggedItem)
+      ) {
         targetInventorySlot.storedItem = STATE.draggedItem
-        STATE.draggedInventorySlot.storedItem = null
+        occupySpaceAroundSlot(targetInventorySlot, targetInventorySlot.storedItem)
+        releaseSpaceAroundSlot(STATE.draggedInventorySlot, STATE.draggedItem)
       } else if (CONFIG.INVENTORY.ITEM_SWAPPING_ENABLED) {
         const targetItem = targetInventorySlot.storedItem
-        if (STATE.draggedItem && targetItem !== STATE.draggedItem) {
+
+        // TODO: This shit
+        if (
+          !spaceAroundSlotIsOccupied(targetInventorySlot, STATE.draggedItem) &&
+          !spaceAroundSlotIsOccupied(STATE.draggedInventorySlot, targetItem) &&
           // If we're actually dragging an item and we're not dropping an item on itself:
+          STATE.draggedItem &&
+          targetItem !== STATE.draggedItem
+        ) {
           targetInventorySlot.storedItem = STATE.draggedItem
           STATE.draggedInventorySlot.storedItem = targetItem
+          console.log('OCCUPIED!')
         }
       }
     } else if (STATE.draggedItem) {
@@ -251,7 +324,6 @@ function handleMouseUp(e) {
     }
 
     STATE.inventorySlots.forEach(s => s.unhighlight())
-    // STATE.draggedInventorySlot.storedItem = null
     STATE.draggedInventorySlot = null
     if (STATE.draggedItem) {
       STATE.draggedItem.dragged = false
