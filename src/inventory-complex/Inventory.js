@@ -322,12 +322,12 @@ function setupEventListeners() {
 
 function setupMouseListeners() {
   canvas.addEventListener('mousedown', handleMouseDown)
-  canvas.addEventListener('mousemove', handleMouseHover)
+  canvas.addEventListener('mousemove', handleMouseDrag)
   document.addEventListener('mouseup', handleMouseUp)
 }
 function removeMouseListeners() {
   canvas.removeEventListener('mousedown', handleMouseDown)
-  canvas.removeEventListener('mousemove', handleMouseHover)
+  canvas.removeEventListener('mousemove', handleMouseDrag)
   document.removeEventListener('mouseup', handleMouseUp)
 }
 function handleMouseDown(e) {
@@ -353,9 +353,10 @@ function handleMouseDown(e) {
     if (STATE.draggedItem) {
       STATE.draggedItem.dragged = true
     }
+    DEBUG_inventoryPrettyPrint()
   }
 }
-function handleMouseHover(e) {
+function handleMouseDrag(e) {
   if (STATE.isMouseDragging) {
     const { layerX, layerY } = e
     const x = Math.floor(layerX / SCALE)
@@ -403,6 +404,7 @@ function handleMouseUp(e) {
 
     if (isWithinInventory(x, y) === false && STATE.draggedItem) {
       removeItem(STATE.draggedItem, x - INVENTORY_CONFIG.HALF_SLOT_SIZE, y - INVENTORY_CONFIG.HALF_SLOT_SIZE)
+      return cleanDraggingState()
     }
 
     const targetInventorySlot = findInventorySlotAtCoordinates(x, y)
@@ -478,9 +480,9 @@ function handleMouseUp(e) {
         occupySpaceAroundSlot(STATE.draggedInventorySlot, targetItem || targetSlotMasterItem)
       }
     }
-
-    cleanDraggingState()
   }
+
+  cleanDraggingState()
 
   // Basically a function that serves as a GOTO >:D
   function cleanDraggingState() {
