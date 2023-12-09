@@ -1,4 +1,4 @@
-Live demo: https://dimitech.io/inventory-system/
+Live demo: https://dimitech.io/inventory-system/?complexInventory=true
 
 ### Resources
 
