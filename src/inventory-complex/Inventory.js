@@ -88,13 +88,7 @@ function addItem(item) {
   item.x = null
   item.y = null
 
-  if (item.sizeCols === 1 && item.sizeRows === 1) {
-    firstEmptySlot.storedItem = item
-    firstEmptySlot.occupied = true
-  } else {
-    // Bigger items require more calculation
-    occupySpaceAroundSlot(firstEmptySlot, item)
-  }
+  occupySpaceAroundSlot(firstEmptySlot, item)
 }
 
 function removeItem(item, worldX, worldY) {
@@ -353,7 +347,6 @@ function handleMouseDown(e) {
     if (STATE.draggedItem) {
       STATE.draggedItem.dragged = true
     }
-    DEBUG_inventoryPrettyPrint()
   }
 }
 function handleMouseDrag(e) {
